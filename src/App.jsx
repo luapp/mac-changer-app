@@ -1,53 +1,217 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/tauri";
-import "./App.css";
+import { useEffect, useState } from 'react';
+import { Command } from '@tauri-apps/api/shell';
+import { invoke } from '@tauri-apps/api/tauri';
+import { appDataDir } from '@tauri-apps/api/path';
+import { mac_adress_generator } from './MacAdress';
+import { writeTextFile, readTextFile, exists, createDir } from '@tauri-apps/api/fs';
+import AppCss from './App.module.css';
+
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+    const [NetworkInterfacesList, setNetworkInterfacesList] = useState('null');
+    const [cmdOutErr, setCmdOutErr] = useState('null');
+    const [macAddress, setMacAddress] = useState('');
+    const [networkCardName, setNetworkCardName] = useState('null');
+    const [output, setOutput] = useState('null');
+    const [appDataPath, setAppDataPath] = useState('null');
+    const [appDataSavePath, setAppDataSavePath] = useState('null');
+    const [saveFileExists, setSaveFileExists] = useState(false);
+    const [firstLaunch, setFirstLaunch] = useState("false");
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name }));
-  }
+    const handleRootNetworkExecution = (cardName) => {
+        let macAdd = mac_adress_generator()
 
-  return (
-    <div className="container">
-      <h1>Welcome to Tauri!</h1>
+        if (cardName === 'null') {
+            return;
+        }
+        if (macAdd === '') {
+            return;
+        }
+        console.log(macAdd)
+        invoke('auth_script_execution', {cardName, macAdd})
+        .then((response) => {
+            setOutput(response);
+        })
+        .catch((error) => {
+            setOutput("Execution error");
+            console.error(error);
+            console.log(error)
+        });
+    };
 
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
+    const ExtractNetworkCardName = (interfaceList) => {
+        if (interfaceList === 'null' || interfaceList === 'ERROR') {
+            if (interfaceList === 'ERROR') {
+                setNetworkCardName('Error');
+            } else {
+                setNetworkCardName('null');
+            }
+            return;
+        }
+        const Match = interfaceList.match(/\(([^)]+)\)/);
+        setNetworkCardName(Match[1]);
+        return Match[1];
+    }
 
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+    const NetworkInterfacesCommandExecution = async () => {
+         try {
+            const shellCommand = new Command('bash', ["-c", "networksetup -getairportpower $(system_profiler SPAirPortDataType | awk -F: '/Interfaces:/{getline; print $1;}')"]);
+            const output = await shellCommand.execute();
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
+            if (output.code === 0) {
+                console.log(`stdout: ${output.stdout}`);
+                setNetworkInterfacesList(output.stdout.trim());
+                return output
+            } else {
+                console.error(`Command failed with code: ${output.code}`);
+                setNetworkInterfacesList('ERROR');
+                setCmdOutErr(output.stderr);
+                return output
+            }
+        } catch (error) {
+            console.error('Command execution failed:', error);
+            setNetworkInterfacesList('ERROR');
+            setCmdOutErr(error.message);
+            return error
+        }
+    };
 
-      <p>{greetMsg}</p>
-    </div>
-  );
+
+
+    const getAppDataPath = async () => {
+        try {
+            const appDataPath = await appDataDir();
+            setAppDataPath(appDataPath);
+        } catch (error) {
+            setAppDataPath('Error');
+        }
+    }
+
+    const saveFileInit = async (filePath) => {
+        setFirstLaunch("true");
+        try {
+            const data = JSON.stringify({
+                firstLaunch: false,
+                macAddressBackupStatus: false,
+                macAddressBackup: 'null',
+            }, null, 4);
+            await writeTextFile(filePath, data);
+            setSaveFileExists(true);
+        } catch (error) {
+            console.error('Failed to save object:', error);
+        }
+    };
+
+    const readSave = async () => {
+        try {
+            const data = await readTextFile(appDataSavePath);
+            const parsedObject = JSON.parse(data);
+            if (parsedObject.macAddressBackupStatus === false) {
+                const currentMacAddress = await getCurrentMacAddress();
+                if (currentMacAddress !== 'ERROR') {
+                    parsedObject.macAddressBackup = currentMacAddress;
+                    parsedObject.macAddressBackupStatus = true;
+                    parsedObject.firstLaunch = false;
+                    await writeTextFile(appDataSavePath, JSON.stringify(parsedObject, null, 4));
+                }
+            }
+
+        } catch (error) {
+            console.error('Failed to read object:', error);
+        }
+    };
+
+    const getCurrentMacAddress = async () => {
+        try {
+            const shellCommand = new Command('bash', ["-c", "ifconfig $(networksetup -listallhardwareports | awk '/Hardware Port: Wi-Fi/{getline; print $2;}') | awk '/ether/{print $2;}'"]);
+            const output = await shellCommand.execute();
+            if (output.code === 0) {
+                console.log(`stdout: ${output.stdout}`);
+                return output.stdout.trim();
+            } else {
+                console.error(`Command failed with code: ${output.code}`);
+                return 'ERROR';
+            }
+        }
+        catch (error) {
+            console.error('Command execution failed:', error);
+            return 'ERROR';
+        }
+    }
+
+    const checkSaveFile = async () => {
+        if (appDataPath === 'null') {
+            return;
+        }
+        try {
+            const filePath = `${appDataPath}data_storage.dat`;
+            setAppDataSavePath(filePath);
+            const directoryExists = await exists(filePath);
+            if (directoryExists) {
+                setSaveFileExists(true);
+            } else {
+                saveFileInit(filePath);
+            }
+        } catch (error) {
+            console.error('Failed to check file:', error);
+        }
+    }
+
+
+    useEffect(() => {
+        getAppDataPath();
+    }, []);
+
+    useEffect(() => {
+        checkSaveFile();
+    }, [appDataPath]);
+
+    useEffect(() => {
+        if (saveFileExists && appDataSavePath !== 'null') {
+            readSave();
+        }
+    }, [saveFileExists, appDataSavePath]);
+
+
+    const StartMACChanger = async () => {
+        setNetworkCardName('null');
+        setNetworkInterfacesList('null');
+        setMacAddress('');
+
+        try {
+            let output = await NetworkInterfacesCommandExecution();
+            if (output.code === 0) {
+                let interfaceList = output.stdout.trim();
+                let cardName = ExtractNetworkCardName(interfaceList);
+                if (cardName !== 'null' && cardName !== 'Error') {
+                    handleRootNetworkExecution(cardName);
+                }
+            } else {
+                setNetworkCardName('Error');
+            }
+        }
+        catch (error) {
+            console.error(error);
+            setNetworkCardName('Error');
+        }
+
+    }
+
+    return (
+        <div>
+            <h1>Mac changer demo</h1>
+            <h3>first launch {firstLaunch}</h3>
+            <button onClick={StartMACChanger}>Run toggle</button>
+            <button >Restore Mac</button>
+            <p>stdout</p>
+            <pre>{networkCardName}</pre>
+            <br/>
+            <p>stderr</p>
+            <pre>{cmdOutErr}</pre>
+            <br/>
+            <p>{output}</p>
+        </div>
+    );
 }
 
 export default App;

@@ -7,21 +7,41 @@
   },
   "package": {
     "productName": "macos_macchanger",
-    "version": "0.1.0"
+    "version": "0.0.0"
   },
   "tauri": {
     "allowlist": {
       "all": false,
-      "shell": {
+      "fs": {
         "all": false,
-        "open": true
+        "readFile": true,
+        "writeFile": true,
+        "exists": true,
+        "createDir": true,
+        "scope": [
+            "$APPDATA/*"
+        ]
+    },
+    "path": {
+        "all": true
+    },
+    "shell": {
+        "all": true,
+        "open": true,
+        "scope": [
+        {
+          "name": "bash",
+          "cmd": "bash",
+          "args": [{ "validator": ".+" }, { "validator": ".+" }]
+        }
+      ]
       }
     },
     "windows": [
       {
         "title": "macos_macchanger",
-        "width": 800,
-        "height": 600
+        "width": 250,
+        "height": 350
       }
     ],
     "security": {
@@ -30,7 +50,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.macos_macchanger.app",
+      "identifier": "com.macadresschanger.testbuild",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
