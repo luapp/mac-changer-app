@@ -3,6 +3,7 @@ import { Command } from '@tauri-apps/api/shell';
 import { invoke } from '@tauri-apps/api/tauri';
 import { appDataDir } from '@tauri-apps/api/path';
 import { mac_adress_generator } from './MacAdress';
+import { checkSaveFile } from './filesManagement'
 import { writeTextFile, readTextFile, exists, createDir } from '@tauri-apps/api/fs';
 import AppCss from './App.module.css';
 
@@ -86,7 +87,7 @@ function App() {
             setAppDataPath('Error');
         }
     }
-
+/*
     const saveFileInit = async (filePath) => {
         setFirstLaunch("true");
         try {
@@ -101,7 +102,7 @@ function App() {
             console.error('Failed to save object:', error);
         }
     };
-
+*/
     const readSave = async () => {
         try {
             const data = await readTextFile(appDataSavePath);
@@ -138,7 +139,7 @@ function App() {
             return 'ERROR';
         }
     }
-
+/*
     const checkSaveFile = async () => {
         if (appDataPath === 'null') {
             return;
@@ -156,14 +157,14 @@ function App() {
             console.error('Failed to check file:', error);
         }
     }
-
+*/
 
     useEffect(() => {
         getAppDataPath();
     }, []);
 
     useEffect(() => {
-        checkSaveFile();
+        checkSaveFile(appDataPath, setSaveFileExists, setAppDataSavePath, setFirstLaunch);
     }, [appDataPath]);
 
     useEffect(() => {
