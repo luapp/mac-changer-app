@@ -1,5 +1,5 @@
 [package]
-name = "macos_macchanger"
+name = "macos_macchangerv0"
 version = "0.0.0"
 description = "A Tauri App"
 authors = ["you"]
@@ -11,7 +11,7 @@ edition = "2021"
 tauri-build = { version = "1", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = [ "fs-create-dir", "fs-exists", "fs-write-file", "fs-read-file", "path-all", "shell-all"] }
+tauri = { version = "1", features = [ "fs-write-file", "fs-create-dir", "fs-read-file", "fs-exists", "shell-all", "path-all"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 

@@ -1,8 +1,10 @@
-import { exists, writeTextFile } from './fileSystem';
+import { exists, writeTextFile, createDir, BaseDirectory } from '@tauri-apps/api/fs';
 
-const saveFileInit = async (filePath, setFirstLaunch, setSaveFileExists) => {
+
+const saveFileInit = async (filePath, setFirstLaunch, setSaveFileExists, appDataPath) => {
     setFirstLaunch("true");
     try {
+        await createDir('', {dir: BaseDirectory.AppData, recursive: true });
         const data = JSON.stringify({
             firstLaunch: false,
             macAddressBackupStatus: false,
@@ -26,7 +28,7 @@ export const checkSaveFile = async (appDataPath, setSaveFileExists, setAppDataSa
         if (directoryExists) {
             setSaveFileExists(true);
         } else {
-            saveFileInit(filePath, setFirstLaunch, setSaveFileExists);
+            saveFileInit(filePath, setFirstLaunch, setSaveFileExists, appDataPath);
         }
     } catch (error) {
         console.error('Failed to check file:', error);

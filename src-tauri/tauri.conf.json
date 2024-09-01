@@ -19,7 +19,8 @@
         "exists": true,
         "createDir": true,
         "scope": [
-            "$APPDATA/*"
+            "$APPDATA",
+            "$APPDATA/**"
         ]
     },
     "path": {
