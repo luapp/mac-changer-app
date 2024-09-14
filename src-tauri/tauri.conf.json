@@ -12,16 +12,37 @@
   "tauri": {
     "allowlist": {
       "all": false,
-      "shell": {
+      "fs": {
         "all": false,
-        "open": true
+        "readFile": true,
+        "writeFile": true,
+        "exists": true,
+        "createDir": true,
+        "scope": [
+            "$APPDATA",
+            "$APPDATA/**"
+        ]
+    },
+    "path": {
+        "all": true
+    },
+    "shell": {
+        "all": true,
+        "open": true,
+        "scope": [
+        {
+          "name": "bash",
+          "cmd": "bash",
+          "args": [{ "validator": ".+" }, { "validator": ".+" }]
+        }
+      ]
       }
     },
     "windows": [
       {
-        "title": "mac_address_changer",
-        "width": 800,
-        "height": 600
+        "title": "macos_macchanger",
+        "width": 250,
+        "height": 350
       }
     ],
     "security": {
