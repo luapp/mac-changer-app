@@ -2,7 +2,7 @@ use tauri::command;
 use std::process::Command;
 
 #[command]
-fn auth_script_execution(card_name: String, mac_add: String) -> Result<String, String> {
+fn wifi_card_toggle_execution(card_name: String, mac_add: String) -> Result<String, String> {
     let script = format!(r#"
     do shell script "networksetup -setairportpower {} off" with administrator privileges
     do shell script "networksetup -setairportpower {} on" with administrator privileges
@@ -24,7 +24,7 @@ fn auth_script_execution(card_name: String, mac_add: String) -> Result<String, S
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![auth_script_execution])
+        .invoke_handler(tauri::generate_handler![wifi_card_toggle_execution])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

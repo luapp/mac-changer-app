@@ -1,4 +1,4 @@
-export const mac_adress_generator = () => {
+export const mac_address_generator = () => {
     const getRandomHexPair = () => {
         return Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
     };

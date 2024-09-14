@@ -2,47 +2,26 @@
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:1420",
+    "devPath": "http://localhost:3000",
     "distDir": "../dist"
   },
   "package": {
-    "productName": "macos_macchanger",
-    "version": "0.0.0"
+    "productName": "mac_address_changer",
+    "version": "0.1.0"
   },
   "tauri": {
     "allowlist": {
       "all": false,
-      "fs": {
+      "shell": {
         "all": false,
-        "readFile": true,
-        "writeFile": true,
-        "exists": true,
-        "createDir": true,
-        "scope": [
-            "$APPDATA",
-            "$APPDATA/**"
-        ]
-    },
-    "path": {
-        "all": true
-    },
-    "shell": {
-        "all": true,
-        "open": true,
-        "scope": [
-        {
-          "name": "bash",
-          "cmd": "bash",
-          "args": [{ "validator": ".+" }, { "validator": ".+" }]
-        }
-      ]
+        "open": true
       }
     },
     "windows": [
       {
-        "title": "macos_macchanger",
-        "width": 250,
-        "height": 350
+        "title": "mac_address_changer",
+        "width": 800,
+        "height": 600
       }
     ],
     "security": {
@@ -51,7 +30,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.macadresschanger.testbuild",
+      "identifier": "com.paul-legall.macaddresschanger",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
