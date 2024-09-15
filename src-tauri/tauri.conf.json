@@ -6,7 +6,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "mac_address_changer",
+    "productName": "MacAddress Changer",
     "version": "0.1.0"
   },
   "tauri": {
@@ -43,9 +43,12 @@
     },
     "windows": [
       {
-        "title": "macos_macchanger",
+        "title": "MacAddress Changer",
         "width": 300,
-        "height": 450
+        "height": 450,
+        "resizable": false,
+        "fullscreen": false
+        
       }
     ],
     "security": {
