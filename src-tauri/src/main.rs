@@ -2,12 +2,12 @@ use tauri::command;
 use std::process::Command;
 
 #[command]
-fn wifi_card_toggle_execution(card_name: String, mac_add: String) -> Result<String, String> {
+fn mac_address_modifier(network_interface: String, mac_address: String) -> Result<String, String> {
     let script = format!(r#"
     do shell script "networksetup -setairportpower {} off" with administrator privileges
     do shell script "networksetup -setairportpower {} on" with administrator privileges
     do shell script "ifconfig {} ether {}" with administrator privileges
-    "#, card_name, card_name, card_name, mac_add);
+    "#, network_interface, network_interface, network_interface, mac_address);
 
     let output = Command::new("osascript")
         .arg("-e")
@@ -24,7 +24,7 @@ fn wifi_card_toggle_execution(card_name: String, mac_add: String) -> Result<Stri
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![wifi_card_toggle_execution])
+        .invoke_handler(tauri::generate_handler![mac_address_modifier])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -54,6 +54,20 @@ export const readSaveFile = async (filePath) => {
     }
 }
 
+export const fetchOriginalMacAddressFromSaveFile = async (filePath) => {
+    try {
+        const parsedData = await readSaveFile(filePath);
+        if (parsedData === undefined) {
+            return undefined;
+        }
+        return parsedData.macAddressBackup;
+    } catch (error) {
+        console.error('Failed to read object:', error);
+        return undefined;
+    }
+}
+
+
 export const writeOriginalMacAddressToSaveFile = async (filePath, parsedData) => {
     try {
         if (parsedData.macAddressBackupStatus === false) {
@@ -107,5 +121,5 @@ export const accessSaveFile = async () => {
     } else {
         return undefined;
     }
-    return 0;
+    return `${savePathExists}app_local_storage.dat`;
 }

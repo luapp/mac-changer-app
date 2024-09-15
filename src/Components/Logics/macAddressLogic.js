@@ -1,6 +1,6 @@
 import { Command } from '@tauri-apps/api/shell';
 
-export const mac_address_generator = () => {
+export const macAddressGenerator = () => {
     const getRandomHexPair = () => {
         return Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
     };
