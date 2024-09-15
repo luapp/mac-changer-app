@@ -84,7 +84,6 @@ const App = () => {
             setLoading(false);
         }
     };
-    let loadingPercentage = Math.floor((completedSteps / totalSteps) * 100);
 
     const executeDeactivationSteps = async () => {
         console.log("Deactivation steps initiated...");
@@ -163,7 +162,6 @@ const App = () => {
             const currentOs = await checkOperatingSystem();
             if (currentOs !== 'MacOS') {
                 setLoading(true);
-                loadingPercentage = "OS not supported yet :(";
             }
         }
         fetchCurrentOs();
@@ -178,9 +176,11 @@ const App = () => {
                 className={`${styles.toggleButton} ${isOn ? styles.on : styles.off}`}
                 style={loading ? { '--completedSteps': completedSteps, '--totalSteps': totalSteps } : {}}
             >
-                {loading 
-                    ? `${loadingPercentage}% Completed...` 
-                    : isOn ? 'Disable' : 'Activate'}
+                {
+                loading ? <span>&#x23FB;</span>
+                : isOn ? <span>&#x23FB;</span>
+                : <span>&#x23FB;</span>
+                }
             </button>
             <div className={styles.macAddress}>
                 <p>Current MAC Address:</p>

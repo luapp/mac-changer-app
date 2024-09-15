@@ -10,14 +10,14 @@
 }
 
 .toggleButton {
-    width: 200px;
-    height: 50px;
-    font-size: 18px;
+    width: 120px; /* Adjusted size for the circular button */
+    height: 120px;
+    font-size: 70px; /* Adjusted font size for better visibility in the circular button */
     font-weight: bold;
     color: white;
     background-color: red; /* Default background color */
-    border: 4px solid transparent;
-    border-radius: 25px;
+    border: 2px solid transparent;
+    border-radius: 50%; /* Ensures the button stays circular */
     cursor: pointer;
     position: relative;
     transition: background-color 0.3s ease;
@@ -33,7 +33,6 @@
 
 /* Dynamically update the border based on the completed steps */
 .toggleButton[disabled] {
-
     position: relative;
 }
 
@@ -44,37 +43,38 @@
     left: -4px;
     right: -4px;
     bottom: -4px;
-    border-radius: 25px;
-    border: 4px solid transparent; /* Initially, no visible border */
+    border-radius: 50%; /* Keep the border round for a circular button */
+    border: 2px solid transparent; /* Initially, no visible border */
     box-sizing: border-box;
     pointer-events: none; /* Prevent interaction with the pseudo-element */
 }
 
 /* Control the border colors based on the steps */
 .toggleButton[disabled][style*="--completedSteps: 1"]:before {
-    border-top-color: white;
+    border-top-color: white; /* Start with the top */
 }
 
 .toggleButton[disabled][style*="--completedSteps: 2"]:before {
     border-top-color: white;
-    border-right-color: white;
+    border-right-color: white; /* Add the right side */
 }
 
 .toggleButton[disabled][style*="--completedSteps: 3"]:before {
     border-top-color: white;
     border-right-color: white;
-    border-bottom-color: white;
+    border-bottom-color: white; /* Add the bottom */
 }
 
 .toggleButton[disabled][style*="--completedSteps: 4"]:before {
     border-top-color: white;
     border-right-color: white;
     border-bottom-color: white;
-    border-left-color: white;
+    border-left-color: white; /* Complete the full circle */
 }
 
 .macAddress {
     font-size: 24px;
     color: white;
     margin-top: 20px;
+    text-align: center;
 }
