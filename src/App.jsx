@@ -14,12 +14,12 @@ const App = () => {
     const executeSteps = async () => {
         let status = undefined;
         if (isOn) {
-            status = await executeDeactivationSteps({ setIsOn, setLoading, setCompletedSteps });
+            status = await executeDeactivationSteps({ setIsOn, setLoading, setCompletedSteps, setCurrentMacAddress });
             if (status === undefined) {
                 console.error("Failed to execute deactivation steps...");
             }
         } else {
-            status = await executeActivationSteps({ setIsOn, setLoading, setCompletedSteps });
+            status = await executeActivationSteps({ setIsOn, setLoading, setCompletedSteps, setCurrentMacAddress });
             if (status === undefined) {
                 console.error("Failed to execute activation steps...");
             }

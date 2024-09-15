@@ -1,8 +1,8 @@
 import { accessSaveFile, fetchOriginalMacAddressFromSaveFile } from "./fileManagement";
 import { fetchNetworkInterface, macAddressModifier } from "./networkInterfaceManagement";
-import { macAddressGenerator } from "./macAddressLogic";
+import { macAddressGenerator, getCurrentMacAddress } from "./macAddressLogic";
 
-export const executeActivationSteps = async ({setIsOn, setLoading, setCompletedSteps}) => {
+export const executeActivationSteps = async ({setIsOn, setLoading, setCompletedSteps, setCurrentMacAddress}) => {
     console.log("Activation steps initiated...");
     setLoading(true);
     setCompletedSteps(0);
@@ -44,6 +44,12 @@ export const executeActivationSteps = async ({setIsOn, setLoading, setCompletedS
                     console.error("Failed to inject random MAC address...");
                     return false;
                 }
+                const currentMacAddress = await getCurrentMacAddress();
+                if (currentMacAddress === undefined) {
+                    console.error("Failed to fetch current MAC address...");
+                    return false;
+                }
+                setCurrentMacAddress(currentMacAddress);
                 return true;
             }
         ];
@@ -66,7 +72,7 @@ export const executeActivationSteps = async ({setIsOn, setLoading, setCompletedS
     }
 };
 
-export const executeDeactivationSteps = async ({setIsOn, setLoading, setCompletedSteps}) => {
+export const executeDeactivationSteps = async ({setIsOn, setLoading, setCompletedSteps, setCurrentMacAddress}) => {
     console.log("Deactivation steps initiated...");
     setLoading(true);
     setCompletedSteps(0);
@@ -109,6 +115,12 @@ export const executeDeactivationSteps = async ({setIsOn, setLoading, setComplete
                     console.error("Failed to inject random MAC address...");
                     return false;
                 }
+                const currentMacAddress = await getCurrentMacAddress();
+                if (currentMacAddress === undefined) {
+                    console.error("Failed to fetch current MAC address...");
+                    return false;
+                }
+                setCurrentMacAddress(currentMacAddress);
                 return true;
             }
         ];
