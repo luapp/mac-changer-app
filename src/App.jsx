@@ -11,11 +11,17 @@ const App = () => {
     const [currentMacAddress, setCurrentMacAddress] = useState(undefined);
 
     const executeSteps = async () => {
-        console.log("Steps initiated...");
+        let status = undefined;
         if (isOn) {
-            await executeDeactivationSteps({ setIsOn, setLoading, setCompletedSteps });
+            status = await executeDeactivationSteps({ setIsOn, setLoading, setCompletedSteps });
+            if (status === undefined) {
+                console.error("Failed to execute deactivation steps...");
+            }
         } else {
-            await executeActivationSteps({ setIsOn, setLoading, setCompletedSteps });
+            status = await executeActivationSteps({ setIsOn, setLoading, setCompletedSteps });
+            if (status === undefined) {
+                console.error("Failed to execute activation steps...");
+            }
         }
     }
 

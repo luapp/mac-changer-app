@@ -62,6 +62,7 @@ export const executeActivationSteps = async ({setIsOn, setLoading, setCompletedS
     catch (error) {
         console.error("An error occurred during the activation steps:", error);
         setLoading(false);
+        return undefined;
     }
 };
 
@@ -126,5 +127,6 @@ export const executeDeactivationSteps = async ({setIsOn, setLoading, setComplete
     catch (error) {
         console.error("An error occurred during the activation steps:", error);
         setLoading(false);
+        return undefined;
     }
 }
