@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { mac_address_generator } from './Components/Logics/macAddressGenerator';
+import { mac_address_generator } from './Components/Logics/macAddressLogic';
 import { accessSaveFile } from './Components/Logics/fileManagement';
 import { checkOperatingSystem } from './Components/Logics/osCheck';
 import styles from './App.module.css';

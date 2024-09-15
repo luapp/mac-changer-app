@@ -1,5 +1,6 @@
 import { exists, writeTextFile, readTextFile, createDir, BaseDirectory } from '@tauri-apps/api/fs';
 import { appDataDir } from '@tauri-apps/api/path';
+import { getCurrentMacAddress } from './macAddressLogic';
 
 export const createLocalSaveDir = async () => {
     try {
@@ -56,7 +57,7 @@ export const readSaveFile = async (filePath) => {
 export const writeOriginalMacAddressToSaveFile = async (filePath, parsedData) => {
     try {
         if (parsedData.macAddressBackupStatus === false) {
-            const currentMac = "00:00:00:00:00";
+            const currentMac = await getCurrentMacAddress();
             if (currentMac !== undefined) {
                 parsedData.macAddressBackup = currentMac;
                 parsedData.macAddressBackupStatus = true;
@@ -89,7 +90,6 @@ export const accessSaveFile = async () => {
             if (saveFileStatus === undefined) {
                 return undefined;
             }
-        } else {
             const saveReadStatus = await readSaveFile(`${savePathExists}app_local_storage.dat`);
             if (saveReadStatus === undefined) {
                 return undefined;
@@ -98,11 +98,14 @@ export const accessSaveFile = async () => {
             if (writeMacBackupStatus === undefined) {
                 return undefined;
             }
+        } else {
+            const saveReadStatus = await readSaveFile(`${savePathExists}app_local_storage.dat`);
+            if (saveReadStatus === undefined) {
+                return undefined;
+            }
         }
     } else {
         return undefined;
     }
     return 0;
 }
-
-
