@@ -3,4 +3,10 @@
     user-select: none;
     -webkit-user-select: none;
     -webkit-user-drag: none;
+    font-family: Comfortaa;
+}
+
+@font-face {
+    font-family: "Comfortaa";
+    src: url("./src/Components/fonts/Comfortaa/Comfortaa-VariableFont_wght.ttf");
 }
