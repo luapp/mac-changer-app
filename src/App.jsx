@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getCurrentMacAddress } from './Components/Logics/macAddressLogic';
 import { checkOperatingSystem } from './Components/Logics/osCheck';
 import { executeActivationSteps, executeDeactivationSteps } from './Components/Logics/toggle';
+import Header from "./Components/UI/Header";
 import styles from './App.module.css';
 
 const App = () => {
@@ -47,6 +48,7 @@ const App = () => {
     
     return (
         <div className={styles.app}>
+            <Header />
             <button
                 onClick={executeSteps}
                 disabled={loading}
