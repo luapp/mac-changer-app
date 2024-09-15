@@ -21,6 +21,7 @@
     cursor: pointer;
     position: relative;
     transition: background-color 0.3s ease;
+    font-family: powerButton;
 }
 
 .on {
@@ -73,4 +74,9 @@
     color: white;
     margin-top: 20px;
     text-align: center;
+}
+
+@font-face {
+    font-family: 'PowerButton';
+    src: url("./Components/fonts/Unicode_IEC_symbol.ttf");
 }
