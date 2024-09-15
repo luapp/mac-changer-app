@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { mac_address_generator } from './Components/Logics/macAddressGenerator';
 import { accessSaveFile } from './Components/Logics/fileManagement';
+import { checkOperatingSystem } from './Components/Logics/osCheck';
 import styles from './App.module.css';
 
 const App = () => {
@@ -37,8 +38,8 @@ const App = () => {
 
 
     const executeActivationSteps = async () => {
-        const status = await accessSaveFile();
-        if (status === undefined) {
+        const accessStatus = await accessSaveFile();
+        if (accessStatus === 1) {
             console.error("Failed to access drive and create mac address backup...");
             return;
         }
@@ -53,7 +54,7 @@ const App = () => {
         setIsOn(prev => !prev); // Toggle the button state after completion
         setLoading(false); // Set loading state to false when all steps are done
     };
-    const loadingPercentage = Math.floor((completedSteps / totalSteps) * 100); // Calculate dynamic percentage
+    let loadingPercentage = Math.floor((completedSteps / totalSteps) * 100); // Calculate dynamic percentage
 
     const executeDeactivationSteps = async () => {
         console.log("Deactivation steps initiated...");
@@ -68,6 +69,16 @@ const App = () => {
         setLoading(false);
     }
 
+    useEffect(() => {
+        const fetchCurrentOs = async () => {
+            const currentOs = await checkOperatingSystem();
+            if (currentOs !== 'MacOS') {
+                setLoading(true);
+                loadingPercentage = "OS not supported yet :(";
+            }
+        }
+        fetchCurrentOs();
+    }, []);
     
     return (
         <div className={styles.app}>

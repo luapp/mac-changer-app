@@ -1,5 +1,5 @@
-import { exists, writeTextFile, createDir, BaseDirectory } from '@tauri-apps/api/fs';
-import { appDataDir, appDir } from '@tauri-apps/api/path';
+import { exists, writeTextFile, readTextFile, createDir, BaseDirectory } from '@tauri-apps/api/fs';
+import { appDataDir } from '@tauri-apps/api/path';
 
 export const createLocalSaveDir = async () => {
     try {
@@ -63,6 +63,8 @@ export const writeOriginalMacAddressToSaveFile = async (filePath, parsedData) =>
                 const newData = JSON.stringify(parsedData, null, 4);
                 await writeTextFile(filePath, newData);
             }
+        } else {
+            return 0;
         }
     }
     catch (error) {

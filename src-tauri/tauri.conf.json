@@ -36,6 +36,9 @@
           "args": [{ "validator": ".+" }, { "validator": ".+" }]
         }
       ]
+      },
+      "os": {
+        "all": true
       }
     },
     "windows": [
