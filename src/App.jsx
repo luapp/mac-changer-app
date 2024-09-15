@@ -1,295 +1,126 @@
-import { useEffect, useState } from 'react';
-import { Command } from '@tauri-apps/api/shell';
-import { invoke } from '@tauri-apps/api/tauri';
-import { appDataDir } from '@tauri-apps/api/path';
-import { mac_adress_generator } from './MacAdress';
-import { checkSaveFile } from './filesManagement'
-import { writeTextFile, readTextFile, exists, createDir } from '@tauri-apps/api/fs';
-import AppCss from './App.module.css';
+import { useState, useEffect } from "react";
+import { macAddressGenerator } from './Components/Logics/macAddressLogic';
+import { accessSaveFile, fetchOriginalMacAddressFromSaveFile } from './Components/Logics/fileManagement';
+import { checkOperatingSystem } from './Components/Logics/osCheck';
+import { fetchNetworkInterface, macAddressModifier } from './Components/Logics/networkInterfaceManagement';
+import styles from './App.module.css';
 
+const App = () => {
+    const [isOn, setIsOn] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [completedSteps, setCompletedSteps] = useState(0);
+    const totalSteps = 3;
 
-function App() {
-    const [NetworkInterfacesList, setNetworkInterfacesList] = useState('null');
-    const [cmdOutErr, setCmdOutErr] = useState('null');
-    const [newMacAddress, setNewMacAddress] = useState('null');
-    const [currentMacAddress, setCurrentMacAddress] = useState('');
-    const [originalMacAddress, setOriginalMacAddress] = useState('');
-    const [networkCardName, setNetworkCardName] = useState('null');
-    const [rustAuthExecutionOutput, setRustAuthExecutionOutput] = useState('null');
-    const [appDataPath, setAppDataPath] = useState('null');
-    const [appDataSavePath, setAppDataSavePath] = useState('null');
-    const [saveFileExists, setSaveFileExists] = useState(false);
-    const [firstLaunch, setFirstLaunch] = useState("false");
-    const [activated, setActivated] = useState(false);
-    const [activationRunning, setActivationRunning] = useState(false);
-
-    const handleRootNetworkExecution = (cardName) => {
-        let macAdd = ""
-        console.log("ACTO"+activated)
-        if (activated) {
-            macAdd = mac_adress_generator()
-            setNewMacAddress(macAdd);
+    const executeSteps = async () => {
+        console.log("Steps initiated...");
+        if (isOn) {
+            await executeDeactivationSteps();
         } else {
-            macAdd = originalMacAddress;
-            setNewMacAddress(macAdd);
-        }
-
-        if (cardName === 'null') {
-            return;
-        }
-        if (macAdd === '') {
-            return;
-        }
-        
-        invoke('auth_script_execution', {cardName, macAdd})
-        .then(() => {
-            setRustAuthExecutionOutput("Executed");
-        })
-        .catch((error) => {
-            setRustAuthExecutionOutput("Execution error");
-            console.error(error);
-            console.log(error)
-        });
-    };
-
-    const ExtractNetworkCardName = (interfaceList) => {
-        if (interfaceList === 'null' || interfaceList === 'ERROR') {
-            if (interfaceList === 'ERROR') {
-                setNetworkCardName('Error');
-            } else {
-                setNetworkCardName('null');
-            }
-            return;
-        }
-        const Match = interfaceList.match(/\(([^)]+)\)/);
-        setNetworkCardName(Match[1]);
-        return Match[1];
-    }
-
-    const NetworkInterfacesCommandExecution = async () => {
-         try {
-            const shellCommand = new Command('bash', ["-c", "networksetup -getairportpower $(system_profiler SPAirPortDataType | awk -F: '/Interfaces:/{getline; print $1;}')"]);
-            const output = await shellCommand.execute();
-
-            if (output.code === 0) {
-                console.log(`stdout: ${output.stdout}`);
-                setNetworkInterfacesList(output.stdout.trim());
-                return output
-            } else {
-                console.error(`Command failed with code: ${output.code}`);
-                setNetworkInterfacesList('ERROR');
-                setCmdOutErr(output.stderr);
-                return output
-            }
-        } catch (error) {
-            console.error('Command execution failed:', error);
-            setNetworkInterfacesList('ERROR');
-            setCmdOutErr(error.message);
-            return error
-        }
-    };
-
-
-
-    const getAppDataPath = async () => {
-        try {
-            const appDataPath = await appDataDir();
-            setAppDataPath(appDataPath);
-        } catch (error) {
-            setAppDataPath('Error');
+            await executeActivationSteps();
         }
     }
-/*
-    const saveFileInit = async (filePath) => {
-        setFirstLaunch("true");
+
+
+    const executeActivationSteps = async () => {
+        console.log("Activation steps initiated...");
+        setLoading(true);
+        setCompletedSteps(0);
         try {
-            const data = JSON.stringify({
-                firstLaunch: false,
-                macAddressBackupStatus: false,
-                macAddressBackup: 'null',
-            }, null, 4);
-            await writeTextFile(filePath, data);
-            setSaveFileExists(true);
-        } catch (error) {
-            console.error('Failed to save object:', error);
-        }
-    };
-*/
-    const readSave = async () => {
-        try {
-            const data = await readTextFile(appDataSavePath);
-            const parsedObject = JSON.parse(data);
-            if (parsedObject.macAddressBackupStatus === false) {
-                const currentMacAddress = await getCurrentMacAddress();
-                if (currentMacAddress !== 'ERROR') {
-                    parsedObject.macAddressBackup = currentMacAddress;
-                    parsedObject.macAddressBackupStatus = true;
-                    parsedObject.firstLaunch = false;
-                    await writeTextFile(appDataSavePath, JSON.stringify(parsedObject, null, 4));
-                    setOriginalMacAddress(currentMacAddress)
+            let networkInterfaceStatus = undefined;
+
+            const stepFunctions = [
+                async () => {
+                    const accessStatus = await accessSaveFile();
+                    if (accessStatus === undefined) {
+                        console.error("Failed to access drive and create MAC address backup...");
+                        return false;
+                    }
+                    const originalMacAddress = await fetchOriginalMacAddressFromSaveFile(accessStatus);
+                    console.log(`Original MAC address: ${originalMacAddress}`);
+                    if (originalMacAddress === undefined) {
+                        console.error("Failed to fetch original MAC address...");
+                        return false;
+                    }
+                    return true;
+                },
+                async () => {
+                    networkInterfaceStatus = await fetchNetworkInterface();
+                    if (networkInterfaceStatus === undefined) {
+                        console.error("Failed to fetch network interface status...");
+                        return false;
+                    }
+                    return true;
+                },
+                async () => {
+                    let randomMacAddress = undefined;
+                    randomMacAddress = macAddressGenerator();
+                    if (randomMacAddress === undefined) {
+                        console.error("Failed to generate random MAC address...");
+                        return false;
+                    }
+                    const randomMacAddressInjectionStatus = await macAddressModifier(networkInterfaceStatus, randomMacAddress);
+                    if (randomMacAddressInjectionStatus === undefined) {
+                        console.error("Failed to inject random MAC address...");
+                        return false;
+                    }
+                    return true;
                 }
+            ];
+            for (let i = 0; i < stepFunctions.length; i++) {
+                const stepSuccess = await stepFunctions[i](); // Execute step
+                if (!stepSuccess) {
+                    console.error(`Step ${i + 1} failed...`);
+                    setLoading(false); // Stop loading if a step fails
+                    return;
+                }
+                setCompletedSteps(i + 1); // Update progress for loading bar
             }
-            if (parsedObject.macAddressBackupStatus) {
-                await getCurrentMacAddress();
-                console.log("READING ORIGINA:")
-                setOriginalMacAddress(parsedObject.macAddressBackup)
-            }
-
-        } catch (error) {
-            console.error('Failed to read object:', error);
-        }
-    };
-
-    const getCurrentMacAddress = async () => {
-        try {
-            const shellCommand = new Command('bash', ["-c", "ifconfig $(networksetup -listallhardwareports | awk '/Hardware Port: Wi-Fi/{getline; print $2;}') | awk '/ether/{print $2;}'"]);
-            const output = await shellCommand.execute();
-            if (output.code === 0) {
-                console.log(`stdout: ${output.stdout}`);
-                setCurrentMacAddress(output.stdout.trim())
-                return output.stdout.trim();
-            } else {
-                console.error(`Command failed with code: ${output.code}`);
-                return 'ERROR';
-            }
+            setIsOn(prev => !prev); // Toggle the button state after completion
+            setLoading(false); // Set loading state to false when all steps are done
         }
         catch (error) {
-            console.error('Command execution failed:', error);
-            return 'ERROR';
+            console.error("An error occurred during the activation steps:", error);
+            setLoading(false); // Set loading state to false if an error occurs
         }
+    };
+    let loadingPercentage = Math.floor((completedSteps / totalSteps) * 100); // Calculate dynamic percentage
+
+    const executeDeactivationSteps = async () => {
+        console.log("Deactivation steps initiated...");
+        setLoading(true);
+        setCompletedSteps(0);
+        const stepFunctions = [asyncFunction04, asyncFunction03, asyncFunction02, asyncFunction01];
+        for (let i = 0; i < stepFunctions.length; i++) {
+            await stepFunctions[i]();
+            setCompletedSteps(i + 1);
+        }
+        setIsOn(prev => !prev);
+        setLoading(false);
     }
-/*
-    const checkSaveFile = async () => {
-        if (appDataPath === 'null') {
-            return;
-        }
-        try {
-            const filePath = `${appDataPath}data_storage.dat`;
-            setAppDataSavePath(filePath);
-            const directoryExists = await exists(filePath);
-            if (directoryExists) {
-                setSaveFileExists(true);
-            } else {
-                saveFileInit(filePath);
+
+    useEffect(() => {
+        const fetchCurrentOs = async () => {
+            const currentOs = await checkOperatingSystem();
+            if (currentOs !== 'MacOS') {
+                setLoading(true);
+                loadingPercentage = "OS not supported yet :(";
             }
-        } catch (error) {
-            console.error('Failed to check file:', error);
         }
-    }
-*/
-
-    useEffect(() => {
-        initMacChanger()
-    }, [activated])
-
-    useEffect(() => {
-        getAppDataPath();
+        fetchCurrentOs();
     }, []);
-
-    useEffect(() => {
-        checkSaveFile(appDataPath, setSaveFileExists, setAppDataSavePath, setFirstLaunch);
-    }, [appDataPath]);
-
-    useEffect(() => {
-        if (saveFileExists && appDataSavePath !== 'null') {
-            readSave();
-        }
-    }, [saveFileExists, appDataSavePath]);
-
-    useEffect(() => {
-        console.log("CURRENT>>>"+currentMacAddress)
-        if (rustAuthExecutionOutput === "Executed" && currentMacAddress !== '') {
-            if (activated && activationRunning) {
-                if (currentMacAddress !== newMacAddress) {
-                    setActivationRunning(false)
-                }
-            }
-            if (!activated && activationRunning) {
-                if (newMacAddress === originalMacAddress) {
-                    console.log("RESTORE SUCCES")
-                    setActivationRunning(false)
-                }
-                
-
-            }
-        }
-    }, [rustAuthExecutionOutput, currentMacAddress])
-
-
-    const stopMACChanger = async () => {
-        console.log("stopping")
-
-        try {
-            let interfaceList = NetworkInterfacesList
-            let cardName = ExtractNetworkCardName(interfaceList);
-            if (cardName !== 'null' && cardName !== 'Error') {
-                await getCurrentMacAddress()
-                handleRootNetworkExecution(cardName);
-            }
-        }
-        catch (error) {
-            console.error(error);
-            setNetworkCardName('Error');
-        }
-    }
-
-    const StartMACChanger = async () => {
-        setNetworkCardName('null');
-        setNetworkInterfacesList('null');
-        setCurrentMacAddress('');
-        console.log("strarting")
-
-        try {
-            let output = await NetworkInterfacesCommandExecution();
-            if (output.code === 0) {
-                let interfaceList = output.stdout.trim();
-                let cardName = ExtractNetworkCardName(interfaceList);
-                if (cardName !== 'null' && cardName !== 'Error') {
-                    await getCurrentMacAddress()
-                    handleRootNetworkExecution(cardName);
-                }
-            } else {
-                setNetworkCardName('Error');
-            }
-        }
-        catch (error) {
-            console.error(error);
-            setNetworkCardName('Error');
-        }
-    }
-
-    const initMacChanger = () => {
-        if (!activationRunning && activated) {
-            setActivated(false);
-            setActivationRunning(true)
-            stopMACChanger();
-
-        }
-        if (!activationRunning && !activated) {
-            setActivated(true);
-            setActivationRunning(true)
-            StartMACChanger();
-        }
-    }
-
-    const toggle = () => {
-        setActivated(!activated)
-        console.log(activated)
-    }
-
+    
     return (
-        <div>
-            <h1>Mac changer demo</h1>
-            <h3>first launch {firstLaunch}</h3>
-            <button onClick={toggle}>Run toggle</button>
-            <button >Restore Mac</button>
-            <p>ACTO</p>
-            <pre>{activated}</pre>
-            <br/>
-            <p>stderr</p>
-            <pre>{cmdOutErr}</pre>
-            <br/>
-            <p>{rustAuthExecutionOutput}</p>
+        <div className={styles.app}>
+            <button
+                onClick={executeSteps}
+                disabled={loading} // Disable button while loading
+                className={`${styles.toggleButton} ${isOn ? styles.on : styles.off}`}
+                style={loading ? { '--completedSteps': completedSteps, '--totalSteps': totalSteps } : {}}
+            >
+                {loading 
+                    ? `${loadingPercentage}% Completed...` 
+                    : isOn ? 'Disable' : 'Activate'}
+            </button>
         </div>
     );
 }
