@@ -174,7 +174,7 @@ const App = () => {
                 onClick={executeSteps}
                 disabled={loading}
                 className={`${styles.toggleButton} ${isOn ? styles.on : styles.off}`}
-                style={loading ? { '--completedSteps': completedSteps, '--totalSteps': totalSteps } : {}}
+                style={loading ? { '--completedSteps': completedSteps } : {}}
             >
                 {
                 loading ? <span>&#x23FB;</span>

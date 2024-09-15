@@ -10,14 +10,14 @@
 }
 
 .toggleButton {
-    width: 120px; /* Adjusted size for the circular button */
+    width: 120px;
     height: 120px;
-    font-size: 70px; /* Adjusted font size for better visibility in the circular button */
+    font-size: 70px;
     font-weight: bold;
     color: white;
-    background-color: red; /* Default background color */
+    background-color: red;
     border: 2px solid transparent;
-    border-radius: 50%; /* Ensures the button stays circular */
+    border-radius: 50%;
     cursor: pointer;
     position: relative;
     transition: background-color 0.3s ease;
@@ -31,7 +31,6 @@
     background-color: red;
 }
 
-/* Dynamically update the border based on the completed steps */
 .toggleButton[disabled] {
     position: relative;
 }
@@ -43,33 +42,29 @@
     left: -4px;
     right: -4px;
     bottom: -4px;
-    border-radius: 50%; /* Keep the border round for a circular button */
-    border: 2px solid transparent; /* Initially, no visible border */
+    border-radius: 50%;
+    border: 2px solid transparent;
     box-sizing: border-box;
-    pointer-events: none; /* Prevent interaction with the pseudo-element */
+    pointer-events: none;
+    transition: border-color 0.1s ease;
 }
 
-/* Control the border colors based on the steps */
 .toggleButton[disabled][style*="--completedSteps: 1"]:before {
-    border-top-color: white; /* Start with the top */
+    border-top-color: white;
+    border-right-color: white;
 }
 
 .toggleButton[disabled][style*="--completedSteps: 2"]:before {
     border-top-color: white;
-    border-right-color: white; /* Add the right side */
+    border-right-color: white;
+    border-bottom-color: white;
 }
 
 .toggleButton[disabled][style*="--completedSteps: 3"]:before {
     border-top-color: white;
     border-right-color: white;
-    border-bottom-color: white; /* Add the bottom */
-}
-
-.toggleButton[disabled][style*="--completedSteps: 4"]:before {
-    border-top-color: white;
-    border-right-color: white;
     border-bottom-color: white;
-    border-left-color: white; /* Complete the full circle */
+    border-left-color: white;
 }
 
 .macAddress {
