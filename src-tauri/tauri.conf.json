@@ -44,8 +44,8 @@
     "windows": [
       {
         "title": "macos_macchanger",
-        "width": 250,
-        "height": 350
+        "width": 300,
+        "height": 450
       }
     ],
     "security": {

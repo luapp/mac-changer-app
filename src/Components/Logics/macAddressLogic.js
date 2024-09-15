@@ -18,6 +18,14 @@ export const macAddressGenerator = () => {
     return macAddress.toLowerCase();
 }
 
+export const macAddressUnicastCheck = (macAddress) => {
+    const firstByte = parseInt(macAddress.split(':')[0], 16);
+    if ((firstByte & 0b00000001) === 0b00000000) {
+        return true;
+    }
+    return false;
+}
+
 export const getCurrentMacAddress = async () => {
     try {
         const shellCommand = new Command('bash', ["-c", "ifconfig $(networksetup -listallhardwareports | awk '/Hardware Port: Wi-Fi/{getline; print $2;}') | awk '/ether/{print $2;}'"]);
