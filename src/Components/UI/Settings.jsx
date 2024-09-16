@@ -4,11 +4,11 @@ const Settings = () => {
     return (
         <div className={styles.settings}>
             <ul className={styles.settingList}>
-                <li>Manual MAC address input</li>
-                <li>Check Original MAC address</li>
-                <li>Contact Us</li>
+                <li className={styles.listElements}>Manual MAC address input</li>
+                <li className={styles.listElements}>Check Original MAC address</li>
+                <li className={styles.listElements}>Contact Us</li>
                 <br/>
-                <li>This is a Beta version</li>
+                <li className={styles.beta}>THIS IS A BETA VERSION AND DOSES NOT REPENSENT THE FINAL QUALITY OF THE PRODUCT</li>
             </ul>
         </div>
     );

@@ -26,4 +26,5 @@
     user-select: none;
     -webkit-user-select: none;
     cursor: default;
+    transform: translateY(2px);
 }
