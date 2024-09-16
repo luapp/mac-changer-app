@@ -4,13 +4,45 @@
     left: 0;
     height: 50px;
     width: 100vw;
-    background-color: #333;
     display: grid;
     grid-template-columns: 20% 80%;
 }
 
-.img {
-    height: 38px;
+.navButton {
     margin: 0;
     padding: 0;
+    justify-self: center;
+    align-self: center;
+}
+
+.title {
+    margin: 0;
+    padding: 0;
+    align-self: center;
+    font-size: 30px;
+    font-weight: 100;
+    color: white;
+    padding-left: 8px;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: default;
+}
+
+.settings {
+    position: fixed;
+    display: grid;
+    top: 50px;
+    left: 0;
+    background-color: #282c34;
+    color: white;
+    text-align: center;
+    height: calc(100vh - 50px);
+    width: 100vw;
+}
+
+.settingList {
+    margin-top: 20px;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
