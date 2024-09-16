@@ -1,0 +1,18 @@
+.settings {
+    position: fixed;
+    display: grid;
+    top: 50px;
+    left: 0;
+    background-color: #282c34;
+    color: white;
+    text-align: center;
+    height: calc(100vh - 50px);
+    width: 100vw;
+}
+
+.settingList {
+    margin-top: 20px;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}

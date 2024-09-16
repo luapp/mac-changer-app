@@ -2,8 +2,7 @@ import styles from './header.module.css';
 import { useState, useEffect } from 'react';
 import { Squash as Hamburger } from 'hamburger-react';
 
-const Header = () => {
-    const [isSettingsOpen, setSettingsOpen] = useState(false);
+const Header = ({isSettingsOpen, setSettingsOpen}) => {
     const [title, setTitle] = useState("");
 
     useEffect(() => {
@@ -26,22 +25,7 @@ const Header = () => {
                 />
             </div>
             <h2 className={styles.title}>{title}</h2>
-            {isSettingsOpen && <Settings />}
         </header>
-    );
-}
-
-const Settings = () => {
-    return (
-        <div className={styles.settings}>
-            <ul className={styles.settingList}>
-                <li>Manual MAC address input</li>
-                <li>Check Original MAC address</li>
-                <li>Contact Us</li>
-                <br/>
-                <li>This is a Beta version</li>
-            </ul>
-        </div>
     );
 }
 
