@@ -1,3 +1,8 @@
+/*
+* © 2024 Paul Le Gall. All Rights Reserved.
+* This code is proprietary and confidential. Unauthorized copying, reproduction, or redistribution is strictly prohibited.
+*/
+
 import styles from './header.module.css';
 import { useState, useEffect } from 'react';
 import { Squash as Hamburger } from 'hamburger-react';

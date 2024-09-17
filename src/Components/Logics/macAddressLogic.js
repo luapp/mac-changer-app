@@ -1,3 +1,8 @@
+/*
+* © 2024 Paul Le Gall. All Rights Reserved.
+* This code is proprietary and confidential. Unauthorized copying, reproduction, or redistribution is strictly prohibited.
+*/
+
 import { Command } from '@tauri-apps/api/shell';
 
 export const macAddressGenerator = () => {

@@ -1,3 +1,8 @@
+/*
+* © 2024 Paul Le Gall. All Rights Reserved.
+* This code is proprietary and confidential. Unauthorized copying, reproduction, or redistribution is strictly prohibited.
+*/
+
 .settings {
     position: fixed;
     display: grid;
@@ -14,16 +19,24 @@
     list-style-type: none;
     padding: 0;
     margin: 0;
-    margin-top: 20px;
+    margin-top: 8px;
 }
 
 .listElements {
     margin: 0;
     cursor: pointer;
-    padding: 12px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     padding-left: 22px;
     padding-right: 22px;
     border-bottom: 1px solid #282c34;
+}
+
+.listElements:hover {
+    background-color: #3e4451;
+    transition: 0.1s;
 }
 
 .beta {
@@ -38,4 +51,18 @@
     -webkit-user-select: none;
     cursor: default;
     font-size: 12px;
+}
+
+.back {
+    color: #ffffff;
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    margin-bottom: 15px;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: pointer;
+    font-size: 22px;
 }

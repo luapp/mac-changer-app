@@ -1,4 +1,9 @@
-import React, {useEffect, useState} from "react";
+/*
+* © 2024 Paul Le Gall. All Rights Reserved.
+* This code is proprietary and confidential. Unauthorized copying, reproduction, or redistribution is strictly prohibited.
+*/
+
+import React, { useState } from "react";
 import Header from "./Components/UI/Header";
 import Home from "./Components/UI/Home";
 import Settings from "./Components/UI/Settings";

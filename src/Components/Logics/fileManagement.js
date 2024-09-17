@@ -1,3 +1,8 @@
+/*
+* © 2024 Paul Le Gall. All Rights Reserved.
+* This code is proprietary and confidential. Unauthorized copying, reproduction, or redistribution is strictly prohibited.
+*/
+
 import { exists, writeTextFile, readTextFile, createDir, BaseDirectory } from '@tauri-apps/api/fs';
 import { appDataDir } from '@tauri-apps/api/path';
 import { getCurrentMacAddress } from './macAddressLogic';

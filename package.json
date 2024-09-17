@@ -9,6 +9,13 @@
     "preview": "vite preview",
     "tauri": "tauri"
   },
+  "author": {
+    "name": "Paul Le Gall",
+    "email": "paul.legall@aol.com",
+    "copyright": "© 2024",
+    "license": "PRIVATE",
+    "description": "A simple mac address changer; Copyright © 2024 Paul Le Gall"
+  },
   "dependencies": {
     "@tauri-apps/api": "^1",
     "hamburger-react": "^2.5.1",
