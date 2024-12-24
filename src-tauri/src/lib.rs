@@ -3,17 +3,8 @@
 * This code is proprietary and confidential. Unauthorized copying, reproduction, or redistribution is strictly prohibited.
 */
 
-#[tauri::command]
-fn detect_os() -> String {
-    let os = std::env::consts::OS;
-    os.to_string()
-}
+mod os_utils;
 
-#[tauri::command]
-fn detect_arch() -> String {
-    let arch = std::env::consts::ARCH;
-    arch.to_string()
-}
 
 #[tauri::command]
 fn get_all_network_interfaces() -> Result<String, String> {
@@ -50,10 +41,20 @@ fn get_all_network_interfaces() -> Result<String, String> {
 
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
+macro_rules! generate_tauri_handlers {
+    () => {
+        tauri::generate_handler![
+            os_utils::detect_os,
+            os_utils::detect_arch,
+            get_all_network_interfaces,
+        ]
+    };
+}
 pub fn run() {
+
     tauri::Builder::default()
-        .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![get_all_network_interfaces, detect_os, detect_arch])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+    .plugin(tauri_plugin_opener::init())
+    .invoke_handler(generate_tauri_handlers!())
+    .run(tauri::generate_context!())
+    .expect("error while running tauri application");
 }
