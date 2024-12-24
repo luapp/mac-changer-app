@@ -43,9 +43,15 @@ function App() {
         return arch;
     }
 
+    async function getAllWifiInterfaces() {
+        const wifiInterfaces = await invoke("get_all_wifi_interfaces");
+        console.log(wifiInterfaces);
+    }
+
     useEffect(() => {
         getOs();
         getArch();
+        getAllWifiInterfaces();
     }, []);
 
   return (
