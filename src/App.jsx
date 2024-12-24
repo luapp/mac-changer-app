@@ -5,8 +5,11 @@
 
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
+import { useState } from "react";
+
 
 function App() {
+    const [interfacesObjectState, setInterfacesObjectState] = useState({});
 
     async function getAllNetworkInterfaces() {
         const interfaces = await invoke("get_all_network_interfaces");
@@ -21,13 +24,21 @@ function App() {
                 lines[i + 2] || null
             ];
         }
-        console.log(interfacesObject);
+        return setInterfacesObjectState(interfacesObject);
     }
 
   return (
     <main className="container">
         <button onClick={getAllNetworkInterfaces}>Button</button>
-
+        <div>
+        {Object.keys(interfacesObjectState).map((key) => (
+            <div key={key}>
+            <h2>{interfacesObjectState[key][0]}</h2>
+            <p>{interfacesObjectState[key][1]}</p>
+            <p>{interfacesObjectState[key][2]}</p>
+            </div>
+        ))}
+      </div>
     </main>
   );
 }
