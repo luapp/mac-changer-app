@@ -41,7 +41,7 @@ fn get_all_network_interfaces() -> Result<String, String> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![get_network_interfaces])
+        .invoke_handler(tauri::generate_handler![get_all_network_interfaces])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
