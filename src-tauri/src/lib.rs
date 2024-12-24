@@ -4,6 +4,18 @@
 */
 
 #[tauri::command]
+fn detect_os() -> String {
+    let os = std::env::consts::OS;
+    os.to_string()
+}
+
+#[tauri::command]
+fn detect_arch() -> String {
+    let arch = std::env::consts::ARCH;
+    arch.to_string()
+}
+
+#[tauri::command]
 fn get_all_network_interfaces() -> Result<String, String> {
     let output = std::process::Command::new("networksetup")
         .arg("-listallhardwareports")
@@ -41,7 +53,7 @@ fn get_all_network_interfaces() -> Result<String, String> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![get_all_network_interfaces])
+        .invoke_handler(tauri::generate_handler![get_all_network_interfaces, detect_os, detect_arch])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

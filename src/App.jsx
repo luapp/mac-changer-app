@@ -5,11 +5,14 @@
 
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 
 function App() {
     const [interfacesObjectState, setInterfacesObjectState] = useState({});
+    const [osState, setOsState] = useState(null);
+    const [archState, setArchState] = useState(null);
+    
 
     async function getAllNetworkInterfaces() {
         const interfaces = await invoke("get_all_network_interfaces");
@@ -24,8 +27,26 @@ function App() {
                 lines[i + 2] || null
             ];
         }
-        return setInterfacesObjectState(interfacesObject);
+        setInterfacesObjectState(interfacesObject);
+        return interfacesObject;
     }
+
+    async function getOs() {
+        const os = await invoke("detect_os");
+        setOsState(os);
+        return os;
+    }
+
+    async function getArch() {
+        const arch = await invoke("detect_arch");
+        setArchState(arch);
+        return arch;
+    }
+
+    useEffect(() => {
+        getOs();
+        getArch();
+    }, []);
 
   return (
     <main className="container">
@@ -38,6 +59,10 @@ function App() {
             <p>{interfacesObjectState[key][2]}</p>
             </div>
         ))}
+
+        <h2>OS</h2>
+        <p>{osState}</p>
+        <p>{archState}</p>
       </div>
     </main>
   );
