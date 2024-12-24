@@ -1,0 +1,7 @@
+        {Object.keys(interfacesObjectState).map((key) => (
+            <div key={key}>
+            <h2>{interfacesObjectState[key][0]}</h2>
+            <p>{interfacesObjectState[key][1]}</p>
+            <p>{interfacesObjectState[key][2]}</p>
+            </div>
+        ))}
