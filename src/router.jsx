@@ -5,13 +5,10 @@
 
 import { invoke } from "@tauri-apps/api/core";
 import { useState, useEffect } from "react";
-import styles from "./App.module.css"
-import Header from "./Header"
+import App from "./App"
 
 const Router = () => {
     const [interfacesObjectState, setInterfacesObjectState] = useState({});
-    const [osState, setOsState] = useState(null);
-    const [archState, setArchState] = useState(null);
     
 
     async function getAllNetworkInterfaces() {
@@ -31,17 +28,7 @@ const Router = () => {
         return interfacesObject;
     }
 
-    async function getOs() {
-        const os = await invoke("detect_os");
-        setOsState(os);
-        return os;
-    }
 
-    async function getArch() {
-        const arch = await invoke("detect_arch");
-        setArchState(arch);
-        return arch;
-    }
 
     async function getAllWifiInterfaces() {
         const wifiInterfaces = await invoke("get_all_wifi_interfaces");
@@ -49,20 +36,11 @@ const Router = () => {
     }
 
     useEffect(() => {
-        getOs();
-        getArch();
         getAllWifiInterfaces();
     }, []);
 
     return (
-        <div className={styles.container}>
-            <Header />
-            <div>
-                <h2>Activation:</h2>
-                <button>OS Detection</button>
-                <p>{osState} - {archState}</p>
-            </div>
-        </div>
+        <App />
     );
 }
 
