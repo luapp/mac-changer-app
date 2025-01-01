@@ -14,7 +14,12 @@
       {
         "title": "mac-changer-app",
         "width": 900,
-        "height": 600
+        "height": 600,
+        "fullscreen": false,
+        "minWidth": 900,
+        "minHeight": 600,
+        "maxWidth": 1920,
+        "maxHeight": 1080
       }
     ],
     "security": {

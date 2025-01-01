@@ -8,3 +8,22 @@
     flex-direction: column;
     color: white;;
 }
+
+.appContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: royalblue;
+}
+
+.toggle {
+    margin-top: 5em;
+    margin-bottom: 3em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+

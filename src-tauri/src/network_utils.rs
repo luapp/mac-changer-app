@@ -66,7 +66,11 @@ pub fn get_all_wifi_interfaces() -> Result<String, String> {
                     wifi_interface_mac_address.clear();
                 }
             }
-            Ok(interfaces.iter().map(|interface| interface.join("\n")).collect::<Vec<String>>().join("\n"))
+            let mut wifi_interfaces = Vec::new();
+            for interface in interfaces {
+                wifi_interfaces.push(interface.join("\n"));
+            }
+            Ok(wifi_interfaces.join("\n"))
         }
         Err(e) => Err(e.to_string()),
     }

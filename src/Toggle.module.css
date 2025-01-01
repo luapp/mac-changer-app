@@ -1,0 +1,32 @@
+.switch {
+  width: 50px;
+  height: 25px;
+  border-radius: 25px;
+  background-color: #ccc;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.switch.on {
+  background-color: #3ac875;
+}
+
+.switch.off {
+  background-color: #dc4444;
+}
+
+.slider {
+  width: 23px;
+  height: 23px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  transition: left 0.3s ease-in-out;
+}
+
+.switch.on .slider {
+  left: 26px;
+}
