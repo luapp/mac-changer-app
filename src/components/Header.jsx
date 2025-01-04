@@ -4,8 +4,8 @@
 */
 
 import styles from "./Header.module.css"
-import gearShapeEmptySf10 from "./resources/images/gearShapeEmptySf10.png"
-import gearShapeFillSf10 from "./resources/images/gearShapeFillSf10.png"
+import gearShapeEmptySf10 from "../resources/images/gearShapeEmptySf10.png"
+import gearShapeFillSf10 from "../resources/images/gearShapeFillSf10.png"
 
 const Header = ({isSettingsOpen,setIsSettingsOpen}) => {
     return (

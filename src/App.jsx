@@ -4,11 +4,11 @@
 */
 
 import styles from "./App.module.css"
-import Header from "./Header"
+import Header from "./components/Header"
 import {useState, useEffect} from "react"
 import {getAllNetworkInterfaces, getAllWifiInterfaces} from "./logic/network"
 import Toggle from "./Toggle"
-import Settings from "./Settings"
+import Settings from "./components/Settings"
 
 import { invoke } from "@tauri-apps/api/core";
 
