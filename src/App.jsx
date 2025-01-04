@@ -9,7 +9,6 @@ import {useState, useEffect} from "react"
 import {getAllNetworkInterfaces, getAllWifiInterfaces} from "./logic/network"
 import Toggle from "./Toggle"
 import Settings from "./components/Settings"
-
 import { invoke } from "@tauri-apps/api/core";
 
 const App = () => {
