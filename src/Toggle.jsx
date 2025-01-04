@@ -3,13 +3,18 @@
 * This code is proprietary and confidential. Unauthorized copying, reproduction, or redistribution is strictly prohibited.
 */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./Toggle.module.css";
 
-const Toggle = ({ onToggle, isOn, scale }) => {
+const Toggle = ({ onToggle, isOn, scale, disabled }) => {
     const [toggled, setToggled] = useState(isOn || false);
 
+    useEffect(() => {
+        setToggled(isOn);
+    }, [isOn]);
+
     const handleClick = () => {
+        if (disabled) return;
         const newToggledState = !toggled;
         setToggled(newToggledState);
         if (onToggle) onToggle(newToggledState);
