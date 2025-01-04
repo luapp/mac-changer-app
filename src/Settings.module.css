@@ -1,0 +1,84 @@
+/*
+* © 2024 Paul Le Gall. All Rights Reserved.
+* This code is proprietary and confidential. Unauthorized copying, reproduction, or redistribution is strictly prohibited.
+*/
+
+.settingsFixedOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.settingsContent {
+    width: 90vw;
+    height: calc(100vh - 50px - 1em);
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    flex-direction: column;
+    border-bottom-right-radius: 25px;
+    border-bottom-left-radius: 25px;
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.settingsTitleText {
+    margin: 0;
+    margin-top: 2em;
+    margin-bottom: 1em;
+    margin-left: 1em;
+}
+
+.settingsList {
+    width: 90%;
+    max-height: clamp(300px, 60%, 600px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+}
+
+.settingsList::-webkit-scrollbar {
+    width: 5px;
+}
+
+.settingsList::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.settingsList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.settingsListElement {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    min-height: 60px;
+    height: 60px;
+    margin: 0;
+    margin-left: 1em;
+    margin-right: 1em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 1.2em;
+    cursor: pointer;
+    padding-left: 25px;
+    transition: 0.2s ease, font-size 0.2s ease;
+}
+
+.settingsListElement:hover {
+    background: rgba(255, 255, 255, 0.1);
+    font-size: 1.3em;
+}
