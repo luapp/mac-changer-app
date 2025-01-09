@@ -39,7 +39,7 @@
 
 .settingsList {
     width: 90%;
-    max-height: clamp(300px, 60%, 600px);
+    max-height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
     display: flex;

@@ -6,7 +6,6 @@
 mod os_utils;
 mod network_utils;
 
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 macro_rules! generate_tauri_handlers {
     () => {
@@ -15,11 +14,13 @@ macro_rules! generate_tauri_handlers {
             os_utils::detect_arch,
             network_utils::get_all_network_interfaces,
             network_utils::get_all_wifi_interfaces,
+            os_utils::random_time_perso,
+            network_utils::mac_address_modifier,
         ]
     };
 }
-pub fn run() {
 
+pub fn run() {
     tauri::Builder::default()
     .plugin(tauri_plugin_opener::init())
     .invoke_handler(generate_tauri_handlers!())

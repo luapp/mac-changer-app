@@ -7,83 +7,119 @@
 import { useState } from "react";
 import styles from "./Settings.module.css";
 
-const SettingsHome = ({setCurrentSettings}) => {
+const SettingsGeneral = ({setCurrentSettings}) => {
 
     const handleSettingsChange = (newSettingsState) => {
         setCurrentSettings(newSettingsState);
     }
 
     return (
-        <ul className={styles.settingsList}>
-            <li className={styles.settingsListElement} onClick={() => handleSettingsChange("General")}>General</li>
-            <li className={styles.settingsListElement} onClick={() => handleSettingsChange("Interface Configuration")}>Interface Configuration</li>
-            <li className={styles.settingsListElement} onClick={() => handleSettingsChange("MAC Address Settings")}>MAC Address Settings</li>
-            <li className={styles.settingsListElement} onClick={() => handleSettingsChange("Help & Support")}>Help & Support</li>
-            <li className={styles.settingsListElement} onClick={() => handleSettingsChange("About")}>About</li>
-        </ul>
-    );
-}
-
-const SettingsGeneral = () => {
-    return (
         <div>
-            <p>general</p>
+            <ul className={styles.settingsList}>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("General")}>General</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("Interface Configuration")}>Interface Configuration</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("MAC Address Settings")}>MAC Address Settings</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("Help & Support")}>Help & Support</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("About")}>About</li>
+            </ul>
+            <h1>ds</h1>
         </div>
     );
 }
 
-const SettingsInterfaceConfiguration = () => {
+const SettingsInterfaceConfiguration = ({setCurrentSettings}) => {
+
+    const handleSettingsChange = (newSettingsState) => {
+        setCurrentSettings(newSettingsState);
+    }
+
     return (
         <div>
-            <p>SettingsInterfaceConfiguration</p>
+            <ul className={styles.settingsList}>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("General")}>General</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("Interface Configuration")}>Interface Configuration</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("MAC Address Settings")}>MAC Address Settings</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("Help & Support")}>Help & Support</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("About")}>About</li>
+            </ul>
         </div>
     );
 }
 
-const SettingsMACAddressSettings = () => {
+const SettingsMACAddressSettings = ({setCurrentSettings}) => {
+
+    const handleSettingsChange = (newSettingsState) => {
+        setCurrentSettings(newSettingsState);
+    }
+
     return (
         <div>
-            <p>SettingsMACAddressSettings</p>
+            <ul className={styles.settingsList}>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("General")}>General</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("Interface Configuration")}>Interface Configuration</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("MAC Address Settings")}>MAC Address Settings</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("Help & Support")}>Help & Support</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("About")}>About</li>
+            </ul>
         </div>
     );
 }
 
-const SettingsHelpSupport = () => {
+const SettingsHelpSupport = ({setCurrentSettings}) => {
+
+    const handleSettingsChange = (newSettingsState) => {
+        setCurrentSettings(newSettingsState);
+    }
+
     return (
         <div>
-            <p>SettingsHelpSupport</p>
+            <ul className={styles.settingsList}>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("General")}>General</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("Interface Configuration")}>Interface Configuration</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("MAC Address Settings")}>MAC Address Settings</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("Help & Support")}>Help & Support</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("About")}>About</li>
+            </ul>
         </div>
     );
 }
 
-const SettingsAbout = () => {
+const SettingsAbout = ({setCurrentSettings}) => {
+
+    const handleSettingsChange = (newSettingsState) => {
+        setCurrentSettings(newSettingsState);
+    }
+
     return (
-        <div className={styles.settingsFixedOverlay}>
-            <div className={styles.settingsContent}>
-                <h1 className={styles.settingsTitleText}>About</h1>
-                <ul className={styles.settingsList}>
-                </ul>
-            </div>
+        <div>
+            <ul className={styles.settingsList}>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("General")}>General</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("Interface Configuration")}>Interface Configuration</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("MAC Address Settings")}>MAC Address Settings</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("Help & Support")}>Help & Support</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("About")}>About</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("About")}>About</li>
+                <li className={styles.settingsListElement} onClick={() => handleSettingsChange("About")}>About</li>
+                
+            </ul>
         </div>
     );
 }
 
 const Settings = () => {
 
-    const [currentSettings, setCurrentSettings] = useState("Settings");
-
+    const [currentSettings, setCurrentSettings] = useState("General");
 
 
     return (
         <div className={styles.settingsFixedOverlay}>
             <div className={styles.settingsContent}>
                 <h1 className={styles.settingsTitleText}>{currentSettings}</h1>
-                {currentSettings === "Settings" && <SettingsHome setCurrentSettings={setCurrentSettings} />}
-                {currentSettings === "General" && <SettingsGeneral />}
-                {currentSettings === "Interface Configuration" && <SettingsInterfaceConfiguration />}
-                {currentSettings === "MAC Address Settings" && <SettingsMACAddressSettings />}
-                {currentSettings === "Help & Support" && <SettingsHelpSupport />}
-                {currentSettings === "About" && <SettingsAbout />}
+                {currentSettings === "General" && <SettingsGeneral setCurrentSettings={setCurrentSettings} />}
+                {currentSettings === "Interface Configuration" && <SettingsInterfaceConfiguration setCurrentSettings={setCurrentSettings} />}
+                {currentSettings === "MAC Address Settings" && <SettingsMACAddressSettings setCurrentSettings={setCurrentSettings} />}
+                {currentSettings === "Help & Support" && <SettingsHelpSupport setCurrentSettings={setCurrentSettings} />}
+                {currentSettings === "About" && <SettingsAbout setCurrentSettings={setCurrentSettings} />}
             </div>
         </div>
     );

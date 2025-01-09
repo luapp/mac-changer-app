@@ -3,6 +3,11 @@
 * This code is proprietary and confidential. Unauthorized copying, reproduction, or redistribution is strictly prohibited.
 */
 
+use tauri::command;
+use std::process::Command;
+use tokio::task;
+use std::time::Duration;
+
 #[tauri::command]
 pub fn get_all_network_interfaces() -> Result<String, String> {
     let output = std::process::Command::new("networksetup")
@@ -73,5 +78,27 @@ pub fn get_all_wifi_interfaces() -> Result<String, String> {
             Ok(wifi_interfaces.join("\n"))
         }
         Err(e) => Err(e.to_string()),
+    }
+}
+
+
+#[tauri::command]
+pub fn mac_address_modifier(network_interface: String, mac_address: String) -> Result<String, String> {
+    let script = format!(r#"
+    do shell script "networksetup -setairportpower {} off" with administrator privileges
+    do shell script "networksetup -setairportpower {} on" with administrator privileges
+    do shell script "ifconfig {} ether {}" with administrator privileges
+    "#, network_interface, network_interface, network_interface, mac_address);
+
+    let output = Command::new("osascript")
+        .arg("-e")
+        .arg(script)
+        .output()
+        .map_err(|e| e.to_string())?;
+
+    if output.status.success() {
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).to_string())
     }
 }
