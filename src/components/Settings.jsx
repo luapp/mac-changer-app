@@ -6,6 +6,7 @@
 
 import { useState } from "react";
 import styles from "./Settings.module.css";
+import Toggle from "../Toggle";
 
 const SettingsGeneral = ({setCurrentSettings}) => {
 
@@ -67,7 +68,8 @@ const SettingsMACAddressSettings = ({setCurrentSettings}) => {
                 <li className={styles.settingsListElement} onClick={() => handleSettingsChange("About")}>About</li>
             </ul>
             <div>
-                <p></p>
+                <p>Random mac address: </p>
+                <Toggle isOn={true} scale={1} />
             </div>
         </div>
     );
