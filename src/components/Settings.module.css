@@ -37,9 +37,18 @@
     margin-left: 1em;
 }
 
+.settingsListContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: row;
+}
+
 .settingsList {
-    width: 90%;
-    max-height: 100%;
+    width: 35%;
+    height: 90%;
     overflow-y: auto;
     overflow-x: hidden;
     display: flex;

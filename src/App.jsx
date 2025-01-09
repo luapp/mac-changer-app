@@ -44,6 +44,10 @@ const App = () => {
         }
     }, [toggleUpdate]);
 
+    useEffect(() => {
+        //
+    }, []);
+
     return (
         <div className={styles.container}>
             <Header isSettingsOpen={isSettingsOpen} setIsSettingsOpen={setIsSettingsOpen}/>
