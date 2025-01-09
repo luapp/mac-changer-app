@@ -45,6 +45,18 @@ const App = () => {
     }, [toggleUpdate]);
 
     useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") {
+                setIsSettingsOpen(false);
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
+    useEffect(() => {
         //
     }, []);
 

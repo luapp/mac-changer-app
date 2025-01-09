@@ -18,6 +18,7 @@
     color: white;
     font-family: "Comfortaa";
     cursor: default;
+    z-index: -10;
 }
 
 .appContent {
