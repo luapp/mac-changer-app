@@ -90,42 +90,42 @@ const SettingsHelpSupport = ({setCurrentSettings}) => {
                 <li className={styles.settingsListElement} onClick={() => handleSettingsChange("Help & Support")}>Help & Support</li>
                 <li className={styles.settingsListElement} onClick={() => handleSettingsChange("About")}>About</li>
             </ul>
-            <div className="support-form">
-                <h3>Support Request</h3>
+            <div className={styles.supportForm}>
+                <p className={styles.title}>Support Request</p>
                 <form>
-            <div className="form-group">
-            <label htmlFor="email">Email Address *</label>
-            <input
-                type="email"
-                id="email"
-                required
-                placeholder="your@email.com"
-            />
-        </div>
-        
-        <div className="form-group">
-            <label htmlFor="description">Problem Description *</label>
-            <textarea
-                id="description"
-                required
-                placeholder="Please describe the issue you're experiencing..."
-                rows={4}
-            />
-        </div>
-        <div className="form-group">
-            <label htmlFor="steps">Steps to Reproduce</label>
-            <textarea
-                id="steps"
-                placeholder="1. First step&#10;2. Second step&#10;3. ..."
-                rows={3}
-            />
-        </div>
+                    <div className={styles.formGroup}>
+                        <input
+                            type="email"
+                            id="email"
+                            className={styles.input}
+                            required
+                            placeholder="your@email.com"
+                        />
+                    </div>
+                    <div className={styles.formGroup}>
+                        <textarea
+                            id="description"
+                            className={styles.textarea}
+                            required
+                            placeholder="Please describe the issue you're experiencing..."
+                            rows={4}
+                        />
+                    </div>
 
-        <button type="submit" className="submit-button">
-            Submit Support Request
-        </button>
-    </form>
-</div>
+                    <div className={styles.formGroup}>
+                        <textarea
+                            id="steps"
+                            className={styles.textarea}
+                            placeholder="1. First step&#10;2. Second step&#10;3. ..."
+                            rows={3}
+                        />
+                    </div>
+
+                    <button type="submit" className={styles.submitButton}>
+                        Submit Support Request
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }

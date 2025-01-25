@@ -6,18 +6,22 @@
 import styles from "./App.module.css"
 import Header from "./components/Header"
 import {useState, useEffect} from "react"
-import {getAllNetworkInterfaces, getAllWifiInterfaces} from "./logic/network"
+import {getAllNetworkInterfaces, getAllWifiInterfaces, macAddressGenerator} from "./logic/network"
+import {fetchOriginalMacAddressFromSaveFile} from "./logic/fileManagement"
 import Toggle from "./Toggle"
 import Settings from "./components/Settings"
 import { invoke } from "@tauri-apps/api/core";
 
 const App = () => {
 
-    const randomtime = async () => {
+    const modifyRandomMacAddress = async () => {
         setIsLoading(true);
-        let res = await invoke("random_time_perso");
+        if (toggleUpdate) {
+            let result = await invoke("modify_random_mac_address", {networkInterface: "en0", macAddress: macAddressGenerator()});
+        } else {
+            let result = await invoke("modify_random_mac_address", {networkInterface: "en0", macAddress: originalMacAddress});
+        }
         setIsLoading(false);
-        console.log(res);
     }
 
     const [currentAllNetworkInterfaces, setCurrentAllNetworkInterfaces] = useState({});
@@ -25,22 +29,39 @@ const App = () => {
     const [toggleUpdate, setToggleUpdate] = useState(undefined);
     const [isLoading, setIsLoading] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [originalMacAddress, setOriginalMacAddress] = useState(undefined);
+    const [isOn, setIsOn] = useState(false);
 
     useEffect(() => {
         getAllNetworkInterfaces().then((interfacesObject) => {
             setCurrentAllNetworkInterfaces(interfacesObject);
+            const wifiInterface = Object.entries(interfacesObject).find(
+                ([_, [interfaceName]]) => interfaceName === "Wi-Fi"
+            )?.[1];
+            console.log(wifiInterface)
         });
         getAllWifiInterfaces().then((wifiInterfaces) => {
             setCurrentAllWifiInterfaces(wifiInterfaces);
-            console.log(wifiInterfaces[0][1]);
-
         });
-    }, []);
+        fetchOriginalMacAddressFromSaveFile().then((macAddress) => {
+            setOriginalMacAddress(macAddress);
+        });
+    }, [isOn]);
 
     useEffect(() => {
-        if (toggleUpdate !== undefined) {
+        if (originalMacAddress !== undefined && currentAllWifiInterfaces !== undefined) {
+            if (currentAllWifiInterfaces[0][1] !== originalMacAddress) {
+                setIsOn(true);
+            } else {
+                setIsOn(false);
+            }
+        }
+    }, [currentAllWifiInterfaces, originalMacAddress]);
+
+    useEffect(() => {
+        if (toggleUpdate !== undefined && currentAllWifiInterfaces !== undefined) {
             console.log("toggleUpdate", toggleUpdate);
-            randomtime();
+            modifyRandomMacAddress();
         }
     }, [toggleUpdate]);
 
@@ -56,16 +77,12 @@ const App = () => {
         };
     }, []);
 
-    useEffect(() => {
-        //
-    }, []);
-
     return (
         <div className={styles.container}>
             <Header isSettingsOpen={isSettingsOpen} setIsSettingsOpen={setIsSettingsOpen}/>
                 <div className={styles.appContent}>
                     <div className={styles.toggle}>
-                        <Toggle isOn={true} onToggle={(state) => setToggleUpdate(state)} scale={3.8} disabled={isLoading}/>
+                        <Toggle isOn={isOn} onToggle={(state) => setToggleUpdate(state)} scale={3.8} disabled={isLoading}/>
                     </div>
                     <p>
                         {currentAllWifiInterfaces?.[0]?.[0]
@@ -74,8 +91,14 @@ const App = () => {
                         }
                     </p>
                     <p>
+                        {originalMacAddress?.length > 0
+                            ? `Original: ${originalMacAddress}`
+                            : "Loading original macaddress"
+                        }
+                    </p>
+                    <p>
                         {currentAllWifiInterfaces?.[0]?.[1]
-                            ? `Original macaddress: ${currentAllWifiInterfaces[0][1]}`
+                            ? `Current: ${currentAllWifiInterfaces[0][1]}`
                             : "Loading original macaddress"
                         }
                     </p>

@@ -3,12 +3,13 @@
 * This code is proprietary and confidential. Unauthorized copying, reproduction, or redistribution is strictly prohibited.
 */
 
-import { exists, writeTextFile, readTextFile, createDir, BaseDirectory } from '@tauri-apps/api/fs';
+import { exists, BaseDirectory, mkdir, writeTextFile, readTextFile } from '@tauri-apps/plugin-fs';
 import { appDataDir } from '@tauri-apps/api/path';
 
 export const createLocalSaveDir = async () => {
     try {
-        await createDir('', {dir: BaseDirectory.AppData, recursive: true });
+        const path = await lookupLocalSaveDirPath();
+        await mkdir(path, {dir: BaseDirectory.AppData, recursive: true });
         return 0;
     } catch (error) {
         console.error('Failed to create directory:', error);
@@ -28,37 +29,47 @@ export const lookupLocalSaveDirPath = async () => {
 
 export const lookupSaveFile = async () => {
     const appDataPath = await lookupLocalSaveDirPath();
-    const filePath = `${appDataPath}app_local_storage.dat`;
+    const filePath = `${appDataPath}/app_local_storage.dat`;
     const directoryExists = await exists(filePath);
     return directoryExists;
 }
 
-export const createSaveFile = async (filePath) => {
+export const createSaveFile = async () => {
+    const appDataPath = await lookupLocalSaveDirPath();
+    const filePath = `${appDataPath}/app_local_storage.dat`;
     try {
-        const data = JSON.stringify({
-            macAddressBackupStatus: false,
-            macAddressBackup: 'null',
-        }, null, 4);
+        let data = JSON.stringify(
+            {
+                macAddressBackup: "undefined",
+            }, null, 4);
         await writeTextFile(filePath, data);
-        return 0;
-    } catch (error) {
-        console.error('Failed to save object:', error);
-        return undefined;
+        return 1;
     }
+    catch (error) {
+        console.error('Failed to create file:', error);
+        return null;
+    }
+
 };
 
-export const readSaveFile = async (filePath) => {
+export const readSaveFile = async () => {
+    const appDataPath = await lookupLocalSaveDirPath();
+    const filePath = `${appDataPath}/app_local_storage.dat`;
     try {
         const data = await readTextFile(filePath);
+        console.log(data);
         const parsedData = JSON.parse(data);
+
         return parsedData;
     } catch (error) {
         console.error('Failed to read object:', error);
-        return undefined;
+        return null;
     }
 }
 
-export const fetchOriginalMacAddressFromSaveFile = async (filePath) => {
+export const fetchOriginalMacAddressFromSaveFile = async () => {
+    const appDataPath = await lookupLocalSaveDirPath();
+    const filePath = `${appDataPath}/app_local_storage.dat`;
     try {
         const parsedData = await readSaveFile(filePath);
         if (parsedData === undefined) {
@@ -72,15 +83,16 @@ export const fetchOriginalMacAddressFromSaveFile = async (filePath) => {
 }
 
 
-export const writeOriginalMacAddressToSaveFile = async (filePath, parsedData) => {
+export const writeOriginalMacAddressToSaveFile = async (parsedData, originalMac) => {
+    const appDataPath = await lookupLocalSaveDirPath();
+    const filePath = `${appDataPath}/app_local_storage.dat`;
     try {
-        if (parsedData.macAddressBackupStatus === false) {
-            const currentMac = await getCurrentMacAddress();
-            if (currentMac !== undefined) {
-                parsedData.macAddressBackup = currentMac;
-                parsedData.macAddressBackupStatus = true;
+        if (parsedData.macAddressBackup === "undefined") {
+            if (originalMac !== undefined) {
+                parsedData.macAddressBackup = originalMac;
                 const newData = JSON.stringify(parsedData, null, 4);
                 await writeTextFile(filePath, newData);
+                return 1;
             }
         } else {
             return 0;
@@ -93,37 +105,37 @@ export const writeOriginalMacAddressToSaveFile = async (filePath, parsedData) =>
 }
 
 
-export const accessSaveFile = async () => {
-    let savePathExists = await lookupLocalSaveDirPath();
+// export const accessSaveFile = async () => {
+//     let savePathExists = await lookupLocalSaveDirPath();
 
-    if (savePathExists) {
-        const localSaveDirStatus = await createLocalSaveDir();
-        if (localSaveDirStatus === undefined) {
-            return undefined;
-        }
-        let saveFileExists = await lookupSaveFile();
-        if (!saveFileExists) {
-            const filePath = `${savePathExists}app_local_storage.dat`;
-            const saveFileStatus = await createSaveFile(filePath);
-            if (saveFileStatus === undefined) {
-                return undefined;
-            }
-            const saveReadStatus = await readSaveFile(`${savePathExists}app_local_storage.dat`);
-            if (saveReadStatus === undefined) {
-                return undefined;
-            }
-            const writeMacBackupStatus = await writeOriginalMacAddressToSaveFile(`${savePathExists}app_local_storage.dat`, saveReadStatus);
-            if (writeMacBackupStatus === undefined) {
-                return undefined;
-            }
-        } else {
-            const saveReadStatus = await readSaveFile(`${savePathExists}app_local_storage.dat`);
-            if (saveReadStatus === undefined) {
-                return undefined;
-            }
-        }
-    } else {
-        return undefined;
-    }
-    return `${savePathExists}app_local_storage.dat`;
-}
+//     if (savePathExists) {
+//         const localSaveDirStatus = await createLocalSaveDir();
+//         if (localSaveDirStatus === undefined) {
+//             return undefined;
+//         }
+//         let saveFileExists = await lookupSaveFile();
+//         if (!saveFileExists) {
+//             const filePath = `${savePathExists}app_local_storage.dat`;
+//             const saveFileStatus = await createSaveFile(filePath);
+//             if (saveFileStatus === undefined) {
+//                 return undefined;
+//             }
+//             const saveReadStatus = await readSaveFile(`${savePathExists}app_local_storage.dat`);
+//             if (saveReadStatus === undefined) {
+//                 return undefined;
+//             }
+//             const writeMacBackupStatus = await writeOriginalMacAddressToSaveFile(`${savePathExists}app_local_storage.dat`, saveReadStatus);
+//             if (writeMacBackupStatus === undefined) {
+//                 return undefined;
+//             }
+//         } else {
+//             const saveReadStatus = await readSaveFile(`${savePathExists}app_local_storage.dat`);
+//             if (saveReadStatus === undefined) {
+//                 return undefined;
+//             }
+//         }
+//     } else {
+//         return undefined;
+//     }
+//     return `${savePathExists}app_local_storage.dat`;
+// }
