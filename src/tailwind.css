@@ -1,0 +1,168 @@
+/*
+* Copyright (c) 2025 Paul Le Gall. All Rights Reserved.
+* Licensed See LICENSE file in the project root for details.
+*/
+
+@import "tailwindcss";
+
+:root {
+    --primary: #023e8a;
+    --warning: #f0a626;
+    --success: #1bbb70;
+    --error: #dc263e;
+    --danger: #dc263e;
+    --background: #121212;
+    --text: #E5E7EB;
+}
+
+.dark {
+    --primary: #023e8a;
+    --warning: #f0a626;
+    --success: #1bbb70;
+    --error: #dc263e;
+    --danger: #dc263e;
+    --background: #1F2937;
+    --text: #F3F4F6;
+}
+
+
+/* Hover brightness */
+.hover-brightness-110:hover {
+    filter: brightness(1.10);
+}
+.hover-brightness-120:hover {
+    filter: brightness(1.20);
+}
+.hover-brightness-130:hover {
+    filter: brightness(1.30);
+}
+.hover-brightness-140:hover {
+    filter: brightness(1.40);
+}
+.hover-brightness-150:hover {
+    filter: brightness(1.50);
+}
+.hover-brightness-160:hover {
+    filter: brightness(1.60);
+}
+.hover-brightness-170:hover {
+    filter: brightness(1.70);
+}
+.hover-brightness-180:hover {
+    filter: brightness(1.80);
+}
+.hover-brightness-190:hover {
+    filter: brightness(1.90);
+}
+.hover-brightness-200:hover {
+    filter: brightness(2.00);
+}
+
+/* Hover contrast */
+.hover-contrast-110:hover {
+    filter: contrast(1.10);
+}
+.hover-contrast-120:hover {
+    filter: contrast(1.20);
+}
+.hover-contrast-130:hover {
+    filter: contrast(1.30);
+}
+.hover-contrast-140:hover {
+    filter: contrast(1.40);
+}
+.hover-contrast-150:hover {
+    filter: contrast(1.50);
+}
+.hover-contrast-160:hover {
+    filter: contrast(1.60);
+}
+.hover-contrast-170:hover {
+    filter: contrast(1.70);
+}
+.hover-contrast-180:hover {
+    filter: contrast(1.80);
+}
+.hover-contrast-190:hover {
+    filter: contrast(1.90);
+}
+.hover-contrast-200:hover {
+    filter: contrast(2.00);
+}
+/* Hover saturate */
+.hover-saturate-110:hover {
+    filter: saturate(1.10);
+}
+.hover-saturate-120:hover {
+    filter: saturate(1.20);
+}
+.hover-saturate-130:hover {
+    filter: saturate(1.30);
+}
+.hover-saturate-140:hover {
+    filter: saturate(1.40);
+}
+.hover-saturate-150:hover {
+    filter: saturate(1.50);
+}
+.hover-saturate-160:hover {
+    filter: saturate(1.60);
+}
+.hover-saturate-170:hover {
+    filter: saturate(1.70);
+}
+.hover-saturate-180:hover {
+    filter: saturate(1.80);
+}
+.hover-saturate-190:hover {
+    filter: saturate(1.90);
+}
+.hover-saturate-200:hover {
+    filter: saturate(2.00);
+}
+
+/* Hover blur */
+.hover-blur-10:hover {
+    filter: blur(10px);
+}
+.hover-blur-20:hover {
+    filter: blur(20px);
+}
+.hover-blur-30:hover {
+    filter: blur(30px);
+}
+.hover-blur-40:hover {
+    filter: blur(40px);
+}
+.hover-blur-50:hover {
+    filter: blur(50px);
+}
+
+/* Hover opacity */
+.hover-opacity-10:hover {
+    opacity: 0.1;
+}
+.hover-opacity-20:hover {
+    opacity: 0.2;
+}
+.hover-opacity-30:hover {
+    opacity: 0.3;
+}
+.hover-opacity-40:hover {
+    opacity: 0.4;
+}
+.hover-opacity-50:hover {
+    opacity: 0.5;
+}
+.hover-opacity-60:hover {
+    opacity: 0.6;
+}
+.hover-opacity-70:hover {
+    opacity: 0.7;
+}
+.hover-opacity-80:hover {
+    opacity: 0.8;
+}
+.hover-opacity-90:hover {
+    opacity: 0.9;
+}

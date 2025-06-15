@@ -1,25 +1,22 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "mac-changer-app",
+  "productName": "mac-changer",
   "version": "0.1.0",
-  "identifier": "com.paul-legall.mac-changer-app",
+  "identifier": "com.tauri.dev",
   "build": {
+    "frontendDist": "../build",
+    "devUrl": "http://localhost:3000",
     "beforeDevCommand": "npm run dev",
-    "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "npm run build",
-    "frontendDist": "../dist"
+    "beforeBuildCommand": "npm run build"
   },
   "app": {
     "windows": [
       {
-        "title": "mac-changer-app",
-        "width": 900,
+        "title": "mac-changer",
+        "width": 800,
         "height": 600,
-        "fullscreen": false,
-        "minWidth": 900,
-        "minHeight": 600,
-        "maxWidth": 1920,
-        "maxHeight": 1080
+        "resizable": true,
+        "fullscreen": false
       }
     ],
     "security": {
