@@ -1,7 +1,7 @@
 /*
-* Copyright (c) 2025 Paul Le Gall. All Rights Reserved.
-* Licensed See LICENSE file in the project root for details.
-*/
+ * Copyright (c) 2025 Paul Le Gall. All Rights Reserved.
+ * Licensed See LICENSE file in the project root for details.
+ */
 
 import { useState } from "react";
 import { Settings, Info, Mail, Home, Menu, X } from "lucide-react";
@@ -19,9 +19,9 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="relative bg-gray-800 fixed top-0 w-full z-50 border-b border-gray-700 p-4 shadow-md flex justify-between items-center">
+    <nav className="relative bg-gray-800 fixed top-0 h-15 w-full z-50 border-b border-gray-700 p-4 pt-1 pb-1 shadow-md flex justify-between items-center">
       <a href="/" className="text-white text-2xl font-bold">
-        <H2 className="text-white m-0">MyApp</H2>
+        <H2 className="text-white m-0">MAC Changer</H2>
       </a>
 
       <div className="relative">
@@ -31,7 +31,11 @@ const Navbar = () => {
           variant="primary"
           aria-label="Toggle menu"
         >
-          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {isMenuOpen ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <Menu className="w-6 h-6" />
+          )}
         </Button>
 
         {isMenuOpen && (
@@ -41,7 +45,7 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             />
 
-            <div className="absolute right-0 mt-8 w-48 bg-gray-900 rounded-xl shadow-lg border border-gray-700 overflow-hidden z-50">
+            <div className="absolute right-0 mt-7 w-48 bg-gray-900 rounded-xl shadow-lg border border-gray-700 overflow-hidden z-50">
               {navItems.map(({ href, label, icon: Icon }) => (
                 <a
                   key={href}
