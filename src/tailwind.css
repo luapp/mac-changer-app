@@ -13,6 +13,7 @@
     --danger: #dc263e;
     --background: #121212;
     --text: #E5E7EB;
+    --container: #c9d2e0a2;
 }
 
 .dark {
@@ -120,6 +121,42 @@
 .hover-saturate-200:hover {
     filter: saturate(2.00);
 }
+
+/* Backdrop Blur */
+.backdrop-blur-0 {
+    backdrop-filter: blur(0px);
+}
+.backdrop-blur-5 {
+    backdrop-filter: blur(5px);
+}
+.backdrop-blur-10 {
+    backdrop-filter: blur(10px);
+}
+.backdrop-blur-15 {
+    backdrop-filter: blur(15px);
+}
+.backdrop-blur-20 {
+    backdrop-filter: blur(20px);
+}
+.backdrop-blur-25 {
+    backdrop-filter: blur(25px);
+}
+.backdrop-blur-30 {
+    backdrop-filter: blur(30px);
+}
+.backdrop-blur-35 {
+    backdrop-filter: blur(35px);
+}
+.backdrop-blur-40 {
+    backdrop-filter: blur(40px);
+}
+.backdrop-blur-45 {
+    backdrop-filter: blur(45px);
+}
+.backdrop-blur-50 {
+    backdrop-filter: blur(50px);
+}
+
 
 /* Hover blur */
 .hover-blur-10:hover {

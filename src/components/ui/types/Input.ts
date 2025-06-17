@@ -5,7 +5,7 @@
 
 import type React from 'react';
 
-export type InputVariant = 'primary';
+export type InputVariant = "primary";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   variant?: InputVariant;

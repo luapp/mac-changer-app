@@ -3,7 +3,7 @@
 * Licensed See LICENSE file in the project root for details.
 */
 
-import type { TextProps, Variant } from '@ui/types/Text';
+import type { TextProps, Variant, LabelProps } from '@ui/types/Text';
 
 const variantClasses: Record<Variant, string> = {
   primary: 'text-[var(--primary)]',
@@ -47,4 +47,10 @@ export const P = ({ children, className = '', variant = 'primary', ...extraParam
   <p className={`text-base select-none ${variantClasses[variant]} ${className}`} {...extraParameters}>
     {children}
   </p>
+);
+
+export const Label = ({ children, className = '', variant = 'primary', ...extraParameters }: LabelProps) => (
+  <label className={`text-sm font-medium block ${variantClasses[variant]} ${className}`} {...extraParameters}>
+    {children}
+  </label>
 );

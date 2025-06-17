@@ -1,14 +1,14 @@
-/*
-* Copyright (c) 2025 Paul Le Gall. All Rights Reserved.
-* Licensed See LICENSE file in the project root for details.
-*/
-
 import type React from 'react';
 
 export type Variant = 'primary' | 'warning' | 'success' | 'error' | 'danger';
 
+export interface TextProps extends React.HTMLAttributes<HTMLElement> {
+  children: React.ReactNode;
+  className?: string;
+  variant?: Variant;
+}
 
-export interface TextProps {
+export interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
   children: React.ReactNode;
   className?: string;
   variant?: Variant;
