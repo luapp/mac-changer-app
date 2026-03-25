@@ -21,18 +21,45 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'"
     }
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["dmg", "app", "nsis", "msi"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "category": "DeveloperTool",
+    "shortDescription": "Change the MAC address of your network interfaces",
+    "longDescription": "MAC Changer is a cross-platform desktop application that allows you to view, randomize, and change the MAC address of your network interfaces. Supports Wi-Fi and Ethernet adapters on macOS and Windows.",
+    "copyright": "Copyright © 2026 Paul Le Gall. All rights reserved.",
+    "licenseFile": "../LICENSE",
+    "macOS": {
+      "entitlements": "Entitlements.plist",
+      "signingIdentity": null,
+      "providerShortName": null,
+      "minimumSystemVersion": "11.0",
+      "dmg": {
+        "appPosition": { "x": 180, "y": 170 },
+        "applicationFolderPosition": { "x": 480, "y": 170 },
+        "windowSize": { "width": 660, "height": 400 }
+      }
+    },
+    "windows": {
+      "certificateThumbprint": null,
+      "timestampUrl": "http://timestamp.digicert.com",
+      "nsis": {
+        "displayLanguageSelector": true,
+        "installerIcon": "icons/icon.ico",
+        "headerImage": "icons/icon.ico",
+        "languages": ["English", "French", "Spanish", "German", "Japanese", "ChineseSimplified"],
+        "installMode": "both"
+      }
+    }
   }
 }

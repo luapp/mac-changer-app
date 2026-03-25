@@ -57,7 +57,7 @@ function App() {
 
         <div className="flex items-center justify-between border-t border-border-subtle px-5 py-3">
           <p className="text-[11px] text-text-tertiary">
-            MAC spoofing requires admin privileges
+            &copy; {new Date().getFullYear()} Paul Le Gall
           </p>
           <button
             onClick={() => setSettingsOpen(true)}

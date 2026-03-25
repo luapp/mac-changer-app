@@ -11,9 +11,13 @@ export function ActionButtons() {
   const applyMac = useAppStore((s) => s.applyMac);
   const performReset = useAppStore((s) => s.performReset);
 
-  const canApply = selectedInterface && newMac && isValidMac(newMac) && !isApplying;
-  const canReset = selectedInterface && !isResetting;
-  const isDisabled = !selectedInterface;
+  const interfaces = useAppStore((s) => s.interfaces);
+  const iface = interfaces.find((i) => i.name === selectedInterface);
+  const hasMac = iface ? iface.mac_address.length > 0 : false;
+
+  const canApply = selectedInterface && hasMac && newMac && isValidMac(newMac) && !isApplying;
+  const canReset = selectedInterface && hasMac && !isResetting;
+  const isDisabled = !selectedInterface || !hasMac;
 
   return (
     <div className="flex gap-3">

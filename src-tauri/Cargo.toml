@@ -1,8 +1,10 @@
 [package]
-name = "tauri-app"
+name = "mac-changer"
 version = "0.1.0"
-description = "MAC Address Changer"
-authors = ["you"]
+description = "Change the MAC address of your network interfaces"
+authors = ["Paul"]
+license = "MIT"
+repository = "https://github.com/paul/mac-changer"
 edition = "2021"
 
 [lib]
@@ -18,3 +20,10 @@ tauri-plugin-opener = "2"
 tauri-plugin-dialog = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

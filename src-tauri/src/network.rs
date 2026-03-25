@@ -33,47 +33,70 @@ pub fn validate_mac_address(mac: &str) -> bool {
 
 #[cfg(target_os = "macos")]
 pub fn get_interfaces() -> Result<Vec<NetworkInterface>, String> {
+    // Use networksetup as the source of truth — this matches what
+    // macOS System Settings shows, filtering out internal/virtual interfaces.
     let hardware_ports = get_hardware_port_mapping();
 
-    let output = Command::new("ifconfig")
-        .arg("-a")
-        .output()
-        .map_err(|e| format!("Failed to run ifconfig: {}", e))?;
+    let mut interfaces = Vec::new();
+
+    for (device, (port_name, iface_type)) in &hardware_ports {
+        // Query ifconfig for live status and current MAC of this device.
+        // If the device doesn't exist (hardware unplugged), ifconfig will fail
+        // and return empty — we still show the service, just as System Settings does.
+        let (mac, is_up) = get_ifconfig_info(device);
+
+        // Try networksetup as a fallback for the MAC when ifconfig has nothing
+        // (e.g. device registered but interface not yet created)
+        let mac = if mac.is_empty() {
+            get_mac_via_networksetup(port_name)
+        } else {
+            mac
+        };
+
+        interfaces.push(NetworkInterface {
+            name: device.clone(),
+            display_name: port_name.clone(),
+            mac_address: mac,
+            is_up,
+            interface_type: iface_type.clone(),
+        });
+    }
+
+    // Sort: Wi-Fi first, then ethernet, then others
+    interfaces.sort_by(|a, b| {
+        let order = |t: &str| match t {
+            "wifi" => 0,
+            "ethernet" => 1,
+            "bridge" => 2,
+            _ => 3,
+        };
+        order(&a.interface_type).cmp(&order(&b.interface_type))
+    });
+
+    Ok(interfaces)
+}
+
+/// Get the current MAC address and UP status for a device via ifconfig.
+#[cfg(target_os = "macos")]
+fn get_ifconfig_info(device: &str) -> (String, bool) {
+    let output = match Command::new("ifconfig").arg(device).output() {
+        Ok(o) => o,
+        Err(_) => return (String::new(), false),
+    };
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    let mut interfaces = Vec::new();
-    let mut current_name = String::new();
-    let mut current_mac = String::new();
+    let mut mac = String::new();
     let mut is_up = false;
 
     for line in stdout.lines() {
-        if !line.starts_with('\t') && !line.starts_with(' ') && line.contains(": flags=") {
-            if !current_name.is_empty() && !current_mac.is_empty() {
-                let (display_name, iface_type) = hardware_ports
-                    .get(&current_name)
-                    .cloned()
-                    .unwrap_or_else(|| (current_name.clone(), guess_interface_type(&current_name)));
-
-                interfaces.push(NetworkInterface {
-                    name: current_name.clone(),
-                    display_name,
-                    mac_address: current_mac.clone(),
-                    is_up,
-                    interface_type: iface_type,
-                });
-            }
-
-            current_name = line.split(':').next().unwrap_or("").to_string();
-            current_mac = String::new();
-            is_up = false;
-            if let Some(flags_section) = line.split('<').nth(1) {
-                is_up = flags_section.split(',').any(|f| f.trim() == "UP" || f.trim().starts_with("UP"));
+        if line.contains("flags=") {
+            if let Some(flags) = line.split('<').nth(1) {
+                is_up = flags.split(',').any(|f| f.trim() == "UP" || f.trim().starts_with("UP"));
             }
         }
-
         let trimmed = line.trim();
         if trimmed.starts_with("ether ") {
-            current_mac = trimmed
+            mac = trimmed
                 .strip_prefix("ether ")
                 .unwrap_or("")
                 .split_whitespace()
@@ -84,62 +107,94 @@ pub fn get_interfaces() -> Result<Vec<NetworkInterface>, String> {
         }
     }
 
-    // Last interface
-    if !current_name.is_empty() && !current_mac.is_empty() {
-        let (display_name, iface_type) = hardware_ports
-            .get(&current_name)
-            .cloned()
-            .unwrap_or_else(|| (current_name.clone(), guess_interface_type(&current_name)));
-
-        interfaces.push(NetworkInterface {
-            name: current_name,
-            display_name,
-            mac_address: current_mac,
-            is_up,
-            interface_type: iface_type,
-        });
-    }
-
-    Ok(interfaces)
+    (mac, is_up)
 }
 
+/// Try to get MAC address via networksetup (works for connected services
+/// even when ifconfig doesn't have the info).
+#[cfg(target_os = "macos")]
+fn get_mac_via_networksetup(service_name: &str) -> String {
+    let output = match Command::new("networksetup")
+        .args(["-getmacaddress", service_name])
+        .output()
+    {
+        Ok(o) if o.status.success() => o,
+        _ => return String::new(),
+    };
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    // Output: "Ethernet Address: aa:bb:cc:dd:ee:ff (Hardware Port: Wi-Fi)"
+    if let Some(addr_part) = stdout.strip_prefix("Ethernet Address: ") {
+        if let Some(mac) = addr_part.split_whitespace().next() {
+            return mac.to_lowercase().to_string();
+        }
+    }
+    String::new()
+}
+
+/// Get only user-configured network services (matches macOS System Settings).
+/// Uses `networksetup -listnetworkserviceorder` which returns only services
+/// the user has set up, not every hardware port on the machine.
 #[cfg(target_os = "macos")]
 fn get_hardware_port_mapping() -> std::collections::HashMap<String, (String, String)> {
     let mut mapping = std::collections::HashMap::new();
 
     let output = Command::new("networksetup")
-        .arg("-listallhardwareports")
+        .arg("-listnetworkserviceorder")
         .output();
 
     if let Ok(output) = output {
         let stdout = String::from_utf8_lossy(&output.stdout);
-        let mut current_port = String::new();
+        let mut current_service = String::new();
 
         for line in stdout.lines() {
-            if let Some(port) = line.strip_prefix("Hardware Port: ") {
-                current_port = port.to_string();
-            } else if let Some(device) = line.strip_prefix("Device: ") {
-                let device = device.trim().to_string();
-                let lower = current_port.to_lowercase();
-                let iface_type = if lower.contains("wi-fi")
-                    || lower.contains("wifi")
-                    || lower.contains("airport")
-                {
-                    "wifi"
-                } else if lower.contains("thunderbolt")
-                    || lower.contains("ethernet")
-                    || lower.contains("usb")
-                {
-                    "ethernet"
-                } else if lower.contains("bluetooth") {
-                    "bluetooth"
-                } else if lower.contains("bridge") {
-                    "bridge"
-                } else {
-                    "other"
-                };
+            let trimmed = line.trim();
 
-                mapping.insert(device, (current_port.clone(), iface_type.to_string()));
+            // Device lines look like: "(Hardware Port: Wi-Fi, Device: en0)"
+            // Check this FIRST since it also starts with '('
+            if trimmed.starts_with("(Hardware Port:") && !current_service.is_empty() {
+                if let Some(device_part) = trimmed.split("Device: ").nth(1) {
+                    let device = device_part.trim_end_matches(')').trim().to_string();
+                    let lower = current_service.to_lowercase();
+
+                    let iface_type = if lower.contains("wi-fi")
+                        || lower.contains("wifi")
+                        || lower.contains("airport")
+                    {
+                        "wifi"
+                    } else if lower.contains("thunderbolt bridge") {
+                        "bridge"
+                    } else if lower.contains("thunderbolt")
+                        || lower.contains("ethernet")
+                        || lower.contains("usb")
+                        || lower.contains("lan")
+                        || lower.contains("iphone")
+                    {
+                        "ethernet"
+                    } else if lower.contains("bluetooth") {
+                        "bluetooth"
+                    } else if lower.contains("bridge") {
+                        "bridge"
+                    } else {
+                        "other"
+                    };
+
+                    mapping.insert(device, (current_service.clone(), iface_type.to_string()));
+                }
+                continue;
+            }
+
+            // Service name lines look like: "(1) Wi-Fi" or "(*) Disabled Service"
+            // Skip disabled services (marked with *)
+            if let Some(rest) = trimmed.strip_prefix('(') {
+                if let Some(idx) = rest.find(')') {
+                    let marker = &rest[..idx];
+                    if marker == "*" {
+                        current_service.clear();
+                        continue;
+                    }
+                    current_service = rest[idx + 1..].trim().to_string();
+                }
             }
         }
     }
@@ -147,20 +202,6 @@ fn get_hardware_port_mapping() -> std::collections::HashMap<String, (String, Str
     mapping
 }
 
-#[cfg(target_os = "macos")]
-fn guess_interface_type(name: &str) -> String {
-    if name == "en0" {
-        "wifi".to_string()
-    } else if name.starts_with("en") {
-        "ethernet".to_string()
-    } else if name.starts_with("bridge") {
-        "bridge".to_string()
-    } else if name.starts_with("awdl") || name.starts_with("llw") {
-        "airdrop".to_string()
-    } else {
-        "other".to_string()
-    }
-}
 
 #[cfg(target_os = "macos")]
 pub fn get_current_mac(interface: &str) -> Result<String, String> {
@@ -204,13 +245,54 @@ pub fn set_mac(interface: &str, mac: &str) -> Result<String, String> {
         return Err("Invalid MAC address format".to_string());
     }
 
+    let is_wifi = is_wifi_interface(interface);
+
+    // Wi-Fi: must DISASSOCIATE without powering off the interface.
+    //   Powering off removes the interface entirely → "Network is down" errors.
+    //   Disassociating keeps the interface alive so ifconfig ether works.
+    //
+    //   Strategy (tried in order):
+    //   1. airport -z          (legacy macOS, removed on Sequoia+)
+    //   2. CoreWLAN via swift   (works on all modern macOS)
+    //   3. Direct ifconfig      (last resort)
+    //
+    // Non-Wi-Fi: standard down / change / up cycle.
+    let shell_commands = if is_wifi {
+        let airport =
+            "/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport";
+        let disassociate_cmd = if std::path::Path::new(airport).exists() {
+            format!("{} -z 2>/dev/null", airport)
+        } else {
+            // Use CoreWLAN via swift to disassociate — works on Sequoia/Tahoe+
+            "swift -e 'import CoreWLAN; CWWiFiClient.shared().interface()?.disassociate()' 2>/dev/null".to_string()
+        };
+
+        format!(
+            "{disassociate}; \
+             sleep 1; \
+             /sbin/ifconfig {iface} ether {mac}",
+            disassociate = disassociate_cmd,
+            iface = interface,
+            mac = mac,
+        )
+    } else {
+        format!(
+            "/sbin/ifconfig {iface} down; \
+             /sbin/ifconfig {iface} ether {mac}; \
+             /sbin/ifconfig {iface} up",
+            iface = interface,
+            mac = mac,
+        )
+    };
+
     let script = format!(
-        "do shell script \"ifconfig {} ether {}\" with administrator privileges",
-        interface, mac
+        "do shell script \"{}\" with administrator privileges",
+        shell_commands.replace('\\', "\\\\").replace('"', "\\\"")
     );
 
     let output = Command::new("osascript")
         .args(["-e", &script])
+        .current_dir("/tmp") // avoid sandbox cwd permission errors
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
 
@@ -218,12 +300,38 @@ pub fn set_mac(interface: &str, mac: &str) -> Result<String, String> {
         Ok(format!("MAC address changed to {} on {}", mac, interface))
     } else {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        if stderr.contains("cancel") {
+        if stderr.contains("cancel") || stderr.contains("User canceled") {
             Err("Operation cancelled by user".to_string())
         } else {
             Err(format!("Failed to change MAC address: {}", stderr.trim()))
         }
     }
+}
+
+/// Determine if an interface is a Wi-Fi adapter by checking networksetup.
+#[cfg(target_os = "macos")]
+fn is_wifi_interface(interface: &str) -> bool {
+    // Check if this device is listed as Wi-Fi hardware port
+    if let Ok(output) = Command::new("networksetup")
+        .arg("-listallhardwareports")
+        .current_dir("/tmp")
+        .output()
+    {
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        let mut current_port = String::new();
+        for line in stdout.lines() {
+            if let Some(port) = line.strip_prefix("Hardware Port: ") {
+                current_port = port.to_lowercase();
+            } else if let Some(device) = line.strip_prefix("Device: ") {
+                if device.trim() == interface {
+                    return current_port.contains("wi-fi")
+                        || current_port.contains("wifi")
+                        || current_port.contains("airport");
+                }
+            }
+        }
+    }
+    false
 }
 
 #[cfg(target_os = "macos")]

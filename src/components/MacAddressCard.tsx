@@ -33,7 +33,10 @@ export function MacAddressCard() {
 
   const Icon = getIcon(iface.interface_type);
 
+  const hasMac = iface.mac_address.length > 0;
+
   const handleCopy = async () => {
+    if (!hasMac) return;
     await navigator.clipboard.writeText(iface.mac_address.toUpperCase());
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -61,26 +64,34 @@ export function MacAddressCard() {
           <span className="text-xs font-medium uppercase tracking-wider text-text-tertiary">
             Current MAC Address
           </span>
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-tertiary transition-colors hover:bg-surface-overlay hover:text-text-secondary"
-          >
-            {copied ? (
-              <>
-                <Check size={12} className="text-success" />
-                <span className="text-success">Copied</span>
-              </>
-            ) : (
-              <>
-                <Copy size={12} />
-                <span>Copy</span>
-              </>
-            )}
-          </button>
+          {hasMac && (
+            <button
+              onClick={handleCopy}
+              className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-tertiary transition-colors hover:bg-surface-overlay hover:text-text-secondary"
+            >
+              {copied ? (
+                <>
+                  <Check size={12} className="text-success" />
+                  <span className="text-success">Copied</span>
+                </>
+              ) : (
+                <>
+                  <Copy size={12} />
+                  <span>Copy</span>
+                </>
+              )}
+            </button>
+          )}
         </div>
-        <p className="selectable font-mono text-2xl font-semibold tracking-widest text-text-primary">
-          {iface.mac_address.toUpperCase()}
-        </p>
+        {hasMac ? (
+          <p className="selectable font-mono text-2xl font-semibold tracking-widest text-text-primary">
+            {iface.mac_address.toUpperCase()}
+          </p>
+        ) : (
+          <p className="text-sm text-text-tertiary">
+            Device not connected
+          </p>
+        )}
       </div>
     </div>
   );
